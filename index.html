@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARden — Sistema de Gestão</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#0c0c0b;--sf:#141412;--sf2:#1a1a17;--sf3:#212120;
+  --bd:#252522;--bd2:#303030;
+  --gold:#c9a84c;--gl:#e8c97a;--gd:#7a6430;--gbg:rgba(201,168,76,.07);
+  --tx:#f0ede6;--tm:#8a8780;--td:#4a4a47;
+  --gr:#5a9a5a;--grbg:#111a11;--grl:#7acc7a;
+  --rd:#9a4a4a;--rdbg:#1a1111;--rdl:#cc7777;
+  --bl:#4a7aaa;--blbg:#111a28;--bll:#7aaacc;
+  --am:#9a7a30;--ambg:#1e1a0e;--aml:#ccaa55;
+  --pu:#7a5aaa;--pubg:#161120;--pul:#aa88dd;
+  --te:#3a8a7a;--tebg:#0e1e1a;--tel:#66ccbb;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;overflow:hidden}html{overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.app{display:flex;height:100vh}
+.sidebar{width:235px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0}
+
+/* SIDEBAR */
+.logo-wrap{padding:26px 22px 18px;border-bottom:1px solid var(--bd)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold);letter-spacing:5px;text-transform:uppercase}
+.logo-sub{font-size:9px;color:var(--td);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.nav-sec{padding:12px 0 2px}
+.nav-lbl{font-size:9px;color:var(--td);letter-spacing:2px;text-transform:uppercase;padding:0 22px 5px}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 22px;cursor:pointer;color:var(--tm);font-size:12.5px;transition:all .15s;border-left:2px solid transparent}
+.ni:hover{color:var(--tx);background:var(--sf2)}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gbg)}
+.ni-ic{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.ni-badge{margin-left:auto;background:var(--rdbg);color:var(--rdl);border:1px solid var(--rd);font-size:9px;padding:1px 6px;border-radius:10px}
+.sf-foot{margin-top:auto;padding:16px 22px;border-top:1px solid var(--bd)}
+.ai-btn{width:100%;padding:10px 14px;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.05));border:1px solid var(--gd);border-radius:var(--rs);color:var(--gl);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:8px;justify-content:center}
+.ai-btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1))}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* PAGE */
+.page{display:none;flex-direction:column;min-height:100%}
+.page.active{display:flex}
+.ph{padding:22px 32px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.pt{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:300;color:var(--tx)}
+.pt em{color:var(--gold);font-style:normal}
+.ha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pb{padding:22px 32px;flex:1}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:var(--rs);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;border:none;font-weight:500;letter-spacing:.3px;white-space:nowrap}
+.bg{background:var(--gold);color:#0c0c0b}.bg:hover{background:var(--gl)}
+.bo{background:transparent;border:1px solid var(--bd2);color:var(--tm)}.bo:hover{border-color:var(--gd);color:var(--gold)}
+.bgh{background:transparent;border:none;color:var(--td);padding:4px 8px}.bgh:hover{color:var(--tx)}
+.bd-btn{background:var(--rdbg);border:1px solid var(--rd);color:var(--rdl)}
+.bgr{background:var(--grbg);border:1px solid var(--gr);color:var(--grl)}
+.bsm{padding:5px 10px;font-size:11px}
+.bxs{padding:3px 8px;font-size:10px}
+
+/* KPI */
+.kg{display:grid;gap:12px;margin-bottom:20px}
+.k4{grid-template-columns:repeat(4,1fr)}
+.k3{grid-template-columns:repeat(3,1fr)}
+.k2{grid-template-columns:repeat(2,1fr)}
+.kpi{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px}
+.kl{font-size:10px;color:var(--td);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.kv{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;line-height:1;color:var(--tx)}
+.kv.gold{color:var(--gold)}.kv.green{color:var(--grl)}.kv.red{color:var(--rdl)}.kv.blue{color:var(--bll)}.kv.teal{color:var(--tel)}
+.ks{font-size:11px;color:var(--td);margin-top:5px}
+
+/* TABLE */
+.tc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.th2{padding:13px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tt{font-size:12px;font-weight:500;color:var(--tx)}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;text-align:left;font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--bd);font-weight:500;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid rgba(37,37,34,.7);font-size:12.5px;color:var(--tm);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sf2);color:var(--tx)}
+.tdm{color:var(--tx)!important;font-weight:500}
+.tdg{color:var(--grl)!important}.tdr{color:var(--rdl)!important}.tdo{color:var(--gold)!important}
+.tdmn{font-family:'Cormorant Garamond',serif;font-size:16px!important}
+.er td{text-align:center;padding:28px;color:var(--td);font-size:12px}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;letter-spacing:.3px;white-space:nowrap}
+.bg2{background:var(--grbg);color:var(--grl);border:1px solid #1e3a1e}
+.ba2{background:var(--ambg);color:var(--aml);border:1px solid #3a2e10}
+.br2{background:var(--rdbg);color:var(--rdl);border:1px solid #3a1818}
+.bb2{background:var(--blbg);color:var(--bll);border:1px solid #1a2e44}
+.bp2{background:var(--pubg);color:var(--pul);border:1px solid #2a1e44}
+.bt2{background:var(--tebg);color:var(--tel);border:1px solid #1a3030}
+.bgold2{background:rgba(201,168,76,.1);color:var(--gl);border:1px solid var(--gd)}
+
+/* PIPELINE STATUS COLORS */
+.s-lead{background:#1e1a0e;color:#ccaa55;border:1px solid #3a2e10}
+.s-proposta{background:#111a28;color:#7aaacc;border:1px solid #1a2e44}
+.s-aguard{background:#1e1a0e;color:#e8c97a;border:1px solid #7a6430}
+.s-confirmado{background:#161120;color:#aa88dd;border:1px solid #2a1e44}
+.s-producao{background:#0e1e1a;color:#66ccbb;border:1px solid #1a3030}
+.s-concluido{background:#111a11;color:#7acc7a;border:1px solid #1e3a1e}
+.s-cancelado{background:#1a1111;color:#cc7777;border:1px solid #3a1818}
+
+/* SECTION */
+.stitle{font-size:10px;color:var(--td);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;margin-top:20px}
+.stitle:first-child{margin-top:0}
+
+/* FORM */
+.fg{display:grid;gap:12px}
+.fg2{grid-template-columns:1fr 1fr}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg4{grid-template-columns:repeat(4,1fr)}
+.fgf{grid-column:1/-1}
+.fi{display:flex;flex-direction:column;gap:5px}
+label{font-size:10px;color:var(--td);letter-spacing:.5px;text-transform:uppercase}
+input,select,textarea{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--rs);padding:9px 12px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;width:100%;transition:border .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gd)}
+textarea{resize:vertical;min-height:70px}
+select option{background:var(--sf)}
+input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.si{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:7px 12px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:12px}
+.si:focus{outline:none;border-color:var(--gd)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.modal{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r);width:580px;max-width:95vw;max-height:92vh;overflow-y:auto;box-shadow:0 30px 100px rgba(0,0,0,.7)}
+.mlg{width:740px}.mxl{width:960px}
+.mh{padding:20px 24px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mtl{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold)}
+.mc{background:none;border:none;color:var(--td);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+.mc:hover{color:var(--tx)}
+.mb{padding:22px 24px}
+.mf{padding:14px 24px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:10px}
+.div{border:none;border-top:1px solid var(--bd);margin:16px 0}
+
+/* AI PANEL */
+.aip{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--sf);border-left:1px solid var(--bd);z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.aip.open{transform:translateX(0)}
+.aih{padding:18px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.ait{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--gold)}
+.aim{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.aimsg{padding:11px 13px;border-radius:var(--rs);font-size:12px;line-height:1.65}
+.aimsg.user{background:rgba(201,168,76,.1);border:1px solid var(--gd);color:var(--tx);align-self:flex-end;max-width:88%}
+.aimsg.bot{background:var(--sf2);border:1px solid var(--bd);color:var(--tm)}
+.aimsg.loading{color:var(--td);font-style:italic}
+.aiinp{padding:14px;border-top:1px solid var(--bd);display:flex;gap:8px}
+.aiinp input{flex:1}
+.aisend{padding:9px 14px;background:var(--gold);border:none;border-radius:var(--rs);color:#0c0c0b;font-size:13px;cursor:pointer;font-weight:500;flex-shrink:0}
+.aisend:hover{background:var(--gl)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.chip{padding:4px 10px;background:var(--sf2);border:1px solid var(--bd);border-radius:20px;font-size:10px;color:var(--tm);cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--gd);color:var(--gold)}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:20px}
+.tab{padding:10px 18px;font-size:12px;color:var(--td);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab:hover{color:var(--tm)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tp{display:none}.tp.active{display:block}
+
+/* CHECKLIST */
+.cl{display:flex;flex-direction:column;gap:6px}
+.ci{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);transition:all .15s}
+.ci:hover{border-color:var(--bd2)}
+.ci.done .cin{text-decoration:line-through;color:var(--td)}
+.cin{flex:1;font-size:12.5px;color:var(--tm)}
+.cim{font-size:10px;color:var(--td)}
+
+/* STOCK BAR */
+.sbar{height:5px;background:var(--bd);border-radius:3px;overflow:hidden;margin-top:5px;width:80px}
+.sfill{height:100%;border-radius:3px;transition:width .3s}
+.sok{background:var(--gr)}.slow{background:var(--am)}.sout{background:var(--rd)}
+
+/* PROG */
+.prog{height:4px;background:var(--bd);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s}
+
+/* KANBAN */
+/* ── PIPELINE ── */
+.kb-wrap{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.kb-wrap::-webkit-scrollbar{height:4px}
+.kb-wrap::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.kbc{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);display:flex;flex-direction:column;min-width:240px;width:240px;flex-shrink:0;max-height:calc(100vh - 140px)}
+.kbh{padding:12px 14px;font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.kbh-count{background:var(--bg);border:1px solid var(--bd2);border-radius:20px;padding:1px 7px;font-size:10px;color:var(--td)}
+.kbb{padding:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1}
+.kbcard{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;transition:border-color .15s}
+.kbcard:hover{border-color:var(--bd2)}
+.kbcn{font-size:12px;font-weight:500;color:var(--tx);line-height:1.35;margin-bottom:3px}
+.kbcm{font-size:10px;color:var(--td);line-height:1.5}
+.kbc-val{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);margin:5px 0 8px}
+.kbc-actions{display:flex;flex-direction:column;gap:5px}
+.kbc-btn{width:100%;padding:6px 8px;border-radius:4px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;text-align:center;border:1px solid;line-height:1.3}
+.kbc-btn-primary{background:rgba(201,168,76,.12);border-color:var(--gd);color:var(--gl)}
+.kbc-btn-primary:hover{background:rgba(201,168,76,.25)}
+.kbc-btn-secondary{background:transparent;border-color:var(--bd2);color:var(--tm)}
+.kbc-btn-secondary:hover{border-color:var(--bd);color:var(--tx)}
+.kbc-empty{font-size:10px;color:var(--td);text-align:center;padding:16px 8px;border:1px dashed var(--bd);border-radius:var(--rs)}
+.kb-lead .kbh{color:var(--aml)}
+.kb-proposta .kbh{color:var(--bll)}
+.kb-aguard .kbh{color:var(--gl)}
+.kb-confirmado .kbh{color:var(--pul)}
+.kb-producao .kbh{color:var(--tel)}
+.kb-concluido .kbh{color:var(--grl)}
+
+/* DOCUMENT PREVIEW */
+.doc-preview{background:#fff;color:#333;border-radius:var(--rs);padding:30px;font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.7;max-height:520px;overflow-y:auto;box-shadow:0 4px 30px rgba(0,0,0,.4)}
+.doc-preview h1{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;text-align:center;color:#2a4a2a;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
+.doc-preview h2{font-size:13px;font-weight:500;color:#2a4a2a;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #2a4a2a}
+.doc-preview .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f5f5f0;padding:12px 14px;border-radius:6px;margin-bottom:16px;font-size:11px}
+.doc-preview .meta-item{display:flex;flex-direction:column}
+.doc-preview .meta-item strong{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px}
+.doc-preview .cat-block{margin-bottom:14px}
+.doc-preview .cat-title{background:#2a4a2a;color:#fff;padding:6px 12px;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border-radius:4px 4px 0 0}
+.doc-preview .item-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:7px 12px;border:1px solid #e0e0d8;border-top:none;font-size:11px}
+.doc-preview .item-row:last-child{border-radius:0 0 4px 4px}
+.doc-preview .item-row:nth-child(even){background:#fafafa}
+.doc-preview .subtotal-row{display:flex;justify-content:flex-end;gap:10px;padding:6px 12px;background:#f0f5f0;border:1px solid #ccdacc;border-top:none;font-size:11px;font-weight:500;color:#2a4a2a;border-radius:0 0 4px 4px}
+.doc-preview .totals-box{background:#f5f5f0;border:1px solid #ddd;border-radius:6px;padding:12px 14px;margin-top:16px}
+.doc-preview .total-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
+.doc-preview .total-row.final{font-weight:600;font-size:14px;color:#2a4a2a;border-top:1px solid #ccc;margin-top:6px;padding-top:8px}
+.doc-preview .total-row.saldo{font-weight:600;color:#cc3333}
+.doc-preview .footer{margin-top:20px;font-size:10px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px}
+.doc-preview .sign-area{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:24px}
+.doc-preview .sign-line{border-top:1px solid #333;padding-top:6px;font-size:10px;text-align:center}
+.doc-preview .proposta-desc{background:#f9f9f5;border-left:3px solid #2a4a2a;padding:12px 14px;border-radius:0 6px 6px 0;margin-bottom:16px;font-size:12px;color:#444}
+.doc-preview .pay-row{display:flex;justify-content:space-between;padding:6px 12px;background:#f5f5f0;border:1px solid #ddd;border-radius:4px;margin-bottom:6px;font-size:12px}
+.doc-preview .pay-row strong{color:#2a4a2a}
+
+/* INLINE STATUS EDIT */
+.status-sel{background:transparent;border:none;font-size:10px;font-weight:500;letter-spacing:.3px;cursor:pointer;padding:2px 6px;border-radius:20px;font-family:'DM Sans',sans-serif}
+.status-sel:focus{outline:none}
+
+/* ACERVO ITEM */
+.acervo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.acervo-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;cursor:pointer;transition:all .15s;position:relative}
+.acervo-card:hover{border-color:var(--gd)}
+.acervo-card.selected{border-color:var(--gold);background:var(--gbg)}
+.acervo-card.selected::after{content:'✓';position:absolute;top:6px;right:8px;color:var(--gold);font-size:12px}
+.acn{font-size:12px;font-weight:500;color:var(--tx);margin-bottom:3px}
+.acv{font-size:13px;color:var(--gold);font-family:'Cormorant Garamond',serif}
+
+/* ALERT BOX */
+.alert{display:flex;gap:10px;padding:11px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:8px}
+
+/* ════ DOCUMENT PANEL (full-screen slide-in) ════ */
+.doc-panel{position:fixed;inset:0;z-index:9999;display:flex;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .2s ease,visibility .2s ease}
+.doc-panel.open{visibility:visible;opacity:1;pointer-events:all}
+.doc-form{width:340px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.doc-form-head{padding:16px 20px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.doc-form-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--gold)}
+.doc-form-close{background:none;border:none;color:var(--td);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1}
+.doc-form-close:hover{color:var(--tx)}
+.doc-form-scroll{flex:1;overflow-y:auto;padding:16px 18px}
+.doc-form-foot{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0}
+.doc-preview-area{flex:1;overflow-y:auto;background:#d4d2cb;padding:24px 20px;display:flex;flex-direction:column;align-items:center}
+.doc-preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:10px}
+.doc-preview-empty-logo{font-family:'Cormorant Garamond',serif;font-size:36px;color:rgba(44,80,22,.2);letter-spacing:4px}
+.doc-preview-empty-txt{font-size:12px;color:#9a9890}
+
+/* form helpers inside doc panel */
+.doc-form .dfi{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.doc-form .dfi label{font-size:9px;color:var(--td);letter-spacing:.8px;text-transform:uppercase}
+.doc-form .dfi input,.doc-form .dfi select,.doc-form .dfi textarea{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--rs);padding:7px 10px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:12px;width:100%;transition:border .15s}
+.doc-form .dfi input:focus,.doc-form .dfi select:focus,.doc-form .dfi textarea:focus{outline:none;border-color:var(--gd)}
+.doc-form .dfi textarea{resize:vertical;min-height:60px;line-height:1.5}
+.doc-form .dfi select option{background:var(--sf)}
+.doc-form .dg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.doc-form .dgf{grid-column:1/-1}
+.doc-form .dsec{font-size:9px;color:var(--td);letter-spacing:1.5px;text-transform:uppercase;padding:10px 0 6px;border-top:1px solid var(--bd);margin-top:4px}
+.doc-form .dsec:first-child{border-top:none;margin-top:0;padding-top:0}
+.doc-form .died{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:10px;margin-bottom:8px;position:relative}
+.doc-form .died-del{position:absolute;top:7px;right:7px;background:none;border:none;color:var(--td);cursor:pointer;font-size:13px;line-height:1;padding:2px 5px}
+.doc-form .died-del:hover{color:#cc7777}
+.doc-form .dadd{width:100%;padding:7px;border:1px dashed var(--bd2);border-radius:var(--rs);background:none;color:var(--tm);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;margin-top:2px}
+.doc-form .dadd:hover{border-color:var(--gd);color:var(--gold)}
+.doc-form .dni{font-size:11px;color:var(--td);text-align:center;padding:10px;border:1px dashed var(--bd);border-radius:var(--rs);margin-bottom:8px}
+
+/* ════ DOCUMENT PAGE STYLES (A4) ════ */
+:root{
+  --dg:#2d5016;--dg2:#3a6b1e;--dg3:#4a8022;
+  --dgl:#eef5e6;--dgm:#c4d8a0;
+  --dw:#fff;--dt:#1c1c1a;--dm:#58584e;
+  --dl:#f6f5f0;--db:#deded8;--dr:#b02a1a;
+}
+.doc-page{width:794px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--dt);margin-bottom:20px;box-shadow:0 6px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;flex-shrink:0}
+.dh{background:var(--dg);padding:20px 36px 16px;display:flex;align-items:center;justify-content:space-between}
+.dh-logo{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:#fff;letter-spacing:7px;text-transform:uppercase;line-height:1}
+.dh-sub{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:3px;text-transform:uppercase;margin-top:3px}
+.dh-right{text-align:right}
+.dh-cnpj{font-size:11px;color:#fff;font-weight:500;margin-bottom:3px}
+.dh-info{font-size:10px;color:rgba(255,255,255,.6);line-height:1.7}
+.dtb{background:var(--dg2);padding:9px 36px;display:flex;align-items:center;justify-content:space-between}
+.dtb-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:#fff;letter-spacing:3px;text-transform:uppercase}
+.dtb-num{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:1px}
+.dbd{padding:22px 36px 28px;flex:1}
+.dmeta{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-bottom:18px}
+.dmeta-row{display:flex;border-bottom:1px solid var(--db)}
+.dmeta-row:last-child{border-bottom:none}
+.dmc{flex:1;padding:9px 13px;border-right:1px solid var(--db)}
+.dmc:last-child{border-right:none}
+.dmc-l{font-size:9px;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.dmc-v{font-size:12px;color:var(--dt);font-weight:500;line-height:1.4}
+.dmc-full{flex:2}
+.dsh{background:var(--dg);color:#fff;padding:7px 14px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;border-radius:4px 4px 0 0;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.dsh span{color:rgba(255,255,255,.65);font-weight:400;font-size:10px}
+.dsh:first-child{margin-top:0}
+.dtbl{width:100%;border-collapse:collapse;border:1px solid var(--db);border-top:none}
+.dtbl th{padding:6px 12px;text-align:left;font-size:9px;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;background:var(--dl);border-bottom:1px solid var(--db);font-weight:500;white-space:nowrap}
+.dtbl th.r{text-align:right}
+.dtbl td{padding:9px 12px;border-bottom:1px solid var(--db);font-size:11.5px;color:var(--dt);vertical-align:top;line-height:1.4}
+.dtbl td.r{text-align:right;white-space:nowrap;font-weight:500}
+.dtbl td.dn{text-align:center;color:var(--dm);font-size:11px;width:28px}
+.dtbl td .dsub{font-size:10px;color:var(--dm);margin-top:2px}
+.dtbl tr:nth-child(even) td{background:#fafaf7}
+.dtbl tr:last-child td{border-bottom:none}
+.dtbl-sub td{background:var(--dgl)!important;font-weight:500;color:var(--dg3);border-top:1px solid var(--dgm)!important;font-size:11px}
+.dpay{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-top:16px}
+.dpay-hd{background:var(--dg);color:#fff;padding:8px 16px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase}
+.dpay-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--db)}
+.dpay-row:last-child{border-bottom:none}
+.dpay-row.hl{background:var(--dgl)}
+.dpay-lbl{font-size:12px;color:var(--dt);font-weight:500}
+.dpay-note{font-size:10px;color:var(--dm);margin-top:2px}
+.dpay-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--dg3);white-space:nowrap}
+.dpay-val.red{color:var(--dr)}
+.dtot{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-top:16px}
+.dtot-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--db)}
+.dtot-row:last-child{border-bottom:none}
+.dtot-row.tg{background:var(--dgl)}
+.dtot-row.sr{background:#fef0ee}
+.dtot-row.sg{background:var(--dgl)}
+.dtot-lbl{font-size:12px;color:var(--dt)}.dtot-lbl .dn2{font-size:10px;color:var(--dm);display:block;margin-top:1px}
+.dtot-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dt);white-space:nowrap}
+.dtot-row.tg .dtot-val{color:var(--dg3);font-size:24px}
+.dtot-row.sr .dtot-lbl,.dtot-row.sr .dtot-val{color:var(--dr)}
+.dtot-row.sg .dtot-lbl,.dtot-row.sg .dtot-val{color:var(--dg3)}
+.dcls{margin-bottom:14px}
+.dcls-hd{font-size:10px;font-weight:600;color:var(--dg);letter-spacing:.8px;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--dgm);margin-bottom:7px}
+.dcls-body{font-size:11.5px;color:var(--dt);line-height:1.8}
+.dcls-li{display:flex;gap:8px;padding:3px 0}
+.dcls-li::before{content:'—';color:var(--dm);flex-shrink:0}
+.dctbl{width:100%;border-collapse:collapse;border:1px solid var(--db);overflow:hidden;margin-top:8px}
+.dctbl th{background:var(--dl);padding:7px 12px;font-size:9px;text-align:left;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--db);font-weight:500}
+.dctbl td{padding:8px 12px;border-bottom:1px solid var(--db);font-size:11px;color:var(--dt)}
+.dctbl tr:last-child td{border-bottom:none}
+.dctbl tr:nth-child(even) td{background:#fafaf7}
+.dhlbox{background:var(--dgl);border:1px solid var(--dgm);border-left:4px solid var(--dg3);border-radius:0 5px 5px 0;padding:12px 15px;font-size:11.5px;line-height:1.8;color:var(--dt);margin-top:14px}
+.dhlbox strong{color:var(--dg);font-weight:600}
+.ddecl{background:var(--dl);border:1px solid var(--db);border-radius:5px;padding:15px;margin-top:16px;font-size:11.5px;line-height:1.9;color:var(--dt)}
+.dsigs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:28px}
+.dsig{display:flex;flex-direction:column;gap:4px}
+.dsig-line{height:48px;border-bottom:1px solid var(--dt);margin-bottom:7px}
+.dsig-name{font-size:11.5px;font-weight:500;color:var(--dt);text-align:center}
+.dsig-sub{font-size:10px;color:var(--dm);text-align:center;letter-spacing:.3px}
+.dsig-role{font-size:9px;color:var(--dm);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.dwitn{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px;padding-top:16px;border-top:1px solid var(--db)}
+.dft{background:var(--dg);padding:9px 36px;display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.dft-l{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:.3px}
+.dft-r{font-size:9px;color:rgba(255,255,255,.4)}
+.drec-tbl{width:100%;border-collapse:collapse;border:1px solid var(--db)}
+.drec-tbl th{background:var(--dg);color:#fff;padding:8px 14px;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;text-align:left}
+.drec-tbl th.r{text-align:right}
+.drec-tbl td{padding:10px 14px;border-bottom:1px solid var(--db);font-size:11.5px;color:var(--dt)}
+.drec-tbl td.r{text-align:right;font-weight:500}
+.drec-tbl td.dn{text-align:center;color:var(--dm);width:32px}
+.drec-tbl tr:nth-child(even) td{background:#fafaf7}
+.drec-tbl tr.dtotal td{background:var(--dg);color:#fff;font-weight:600;font-size:13px}
+.drec-tbl tr.dtotal td.r{font-family:'Cormorant Garamond',serif;font-size:18px}
+
+
+
+/* ════ DOCUMENT PANEL ════ */
+
+.doc-form{width:340px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.doc-form-head{padding:16px 20px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.doc-form-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--gold)}
+.doc-form-close{background:none;border:none;color:var(--td);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1}
+.doc-form-close:hover{color:var(--tx)}
+.doc-form-scroll{flex:1;overflow-y:auto;padding:16px 18px}
+.doc-form-foot{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0}
+.doc-preview-area{flex:1;overflow-y:auto;background:#d4d2cb;padding:24px 20px;display:flex;flex-direction:column;align-items:center}
+.doc-preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:10px}
+.doc-preview-empty-logo{font-family:'Cormorant Garamond',serif;font-size:36px;color:rgba(44,80,22,.2);letter-spacing:4px}
+.doc-preview-empty-txt{font-size:12px;color:#9a9890}
+.doc-form .dfi{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.doc-form .dfi label{font-size:9px;color:var(--td);letter-spacing:.8px;text-transform:uppercase}
+.doc-form .dfi input,.doc-form .dfi select,.doc-form .dfi textarea{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--rs);padding:7px 10px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:12px;width:100%;transition:border .15s}
+.doc-form .dfi input:focus,.doc-form .dfi select:focus,.doc-form .dfi textarea:focus{outline:none;border-color:var(--gd)}
+.doc-form .dfi textarea{resize:vertical;min-height:60px;line-height:1.5}
+.doc-form .dfi select option{background:var(--sf)}
+.doc-form .dg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.doc-form .dgf{grid-column:1/-1}
+.doc-form .dsec{font-size:9px;color:var(--td);letter-spacing:1.5px;text-transform:uppercase;padding:10px 0 6px;border-top:1px solid var(--bd);margin-top:4px}
+.doc-form .dsec:first-child{border-top:none;margin-top:0;padding-top:0}
+.doc-form .died{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:10px;margin-bottom:8px;position:relative}
+.doc-form .died-del{position:absolute;top:7px;right:7px;background:none;border:none;color:var(--td);cursor:pointer;font-size:13px;line-height:1;padding:2px 5px}
+.doc-form .died-del:hover{color:#cc7777}
+.doc-form .dadd{width:100%;padding:7px;border:1px dashed var(--bd2);border-radius:var(--rs);background:none;color:var(--tm);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;margin-top:2px}
+.doc-form .dadd:hover{border-color:var(--gd);color:var(--gold)}
+.doc-form .dni{font-size:11px;color:var(--td);text-align:center;padding:10px;border:1px dashed var(--bd);border-radius:var(--rs);margin-bottom:8px}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo">ARden</div>
+    <div class="logo-sub">Designer de Celebrações</div>
+  </div>
+  <nav>
+    <div class="nav-sec">
+      <div class="nav-lbl">Principal</div>
+      <div class="ni active" onclick="nav('dashboard')"><span class="ni-ic">◈</span>Dashboard</div>
+      <div class="ni" onclick="nav('pipeline')"><span class="ni-ic">⊞</span>Pipeline</div>
+      <div class="ni" onclick="nav('eventos')"><span class="ni-ic">◇</span>Eventos</div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Documentos</div>
+      <div class="ni" onclick="nav('propostas')"><span class="ni-ic">◑</span>Propostas</div>
+      <div class="ni" onclick="nav('contratos')"><span class="ni-ic">◐</span>Contratos</div>
+      <div class="ni" onclick="nav('prestacao')"><span class="ni-ic">◉</span>Prestação de Contas</div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Operação</div>
+      <div class="ni" onclick="nav('agenda')"><span class="ni-ic">◫</span>Agenda & Tarefas</div>
+      <div class="ni" onclick="nav('compras')"><span class="ni-ic">▣</span>Compras</div>
+      <div class="ni" onclick="nav('estoque')"><span class="ni-ic">◎</span>Estoque & Acervo</div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Financeiro</div>
+      <div class="ni" onclick="nav('financeiro')"><span class="ni-ic">⊟</span>Financeiro</div>
+      <div class="ni" onclick="nav('conciliacao')"><span class="ni-ic">⊠</span>Conciliação</div>
+      <div class="ni" onclick="nav('clientes')"><span class="ni-ic">◔</span>Clientes</div>
+    </div>
+  </nav>
+  <div class="sf-foot">
+    <button class="ai-btn" onclick="toggleAI()"><div class="ai-dot"></div>Assistente IA</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="pg-dashboard" class="page active">
+  <div class="ph"><div class="pt">Dashboard <em>ARden</em></div>
+    <div class="ha">
+      <button class="btn bo" onclick="exportCSV()">↓ Exportar</button>
+      <button class="btn bg" onclick="openModal('evento')">+ Novo Evento</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="kg k4" id="dash-kpis"></div>
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
+      <div>
+        <div class="stitle">Eventos Ativos</div>
+        <div class="tc"><table><thead><tr><th>Evento</th><th>Cliente</th><th>Data</th><th>Fase</th><th>Margem</th><th>Próxima Ação</th></tr></thead><tbody id="tb-dash-ev"></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">Alertas</div>
+        <div id="dash-alertas"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="pg-pipeline" class="page">
+  <div class="ph">
+    <div class="pt">Pipeline de <em>Eventos</em></div>
+    <div class="ha">
+      <span style="font-size:11px;color:var(--td)">Clique nas ações para avançar cada evento</span>
+      <button class="btn bg" onclick="openModal('evento')">+ Novo Evento</button>
+    </div>
+  </div>
+  <div class="pb" style="padding-top:16px">
+    <div id="kb-board" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:start"></div>
+  </div>
+</div>
+
+<!-- EVENTOS -->
+<div id="pg-eventos" class="page">
+  <div class="ph"><div class="pt">Eventos</div>
+    <div class="ha">
+      <input class="si" placeholder="Buscar..." style="width:180px" oninput="renderEventos(this.value)">
+      <button class="btn bg" onclick="openModal('evento')">+ Novo Evento</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="tc"><table><thead><tr><th>Evento</th><th>Cliente</th><th>Data</th><th>Fase</th><th>Receita</th><th>Custo Real</th><th>Lucro</th><th>Margem</th><th></th></tr></thead><tbody id="tb-eventos"></tbody></table></div>
+  </div>
+</div>
+
+<!-- PROPOSTAS -->
+<div id="pg-propostas" class="page">
+  <div class="ph">
+    <div class="pt">Propostas</div>
+    <div class="ha">
+      <select class="si" id="prop-filtro" onchange="renderPropostas()" style="width:180px"><option value="">Todos os eventos</option></select>
+      <button class="btn bg" onclick="abrirDocPanel('proposta')">+ Nova Proposta</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="tc"><table><thead><tr><th>Nº</th><th>Evento</th><th>Cliente</th><th>Data Evento</th><th>Valor</th><th>Gerada em</th><th>Status</th><th></th></tr></thead><tbody id="tb-propostas"></tbody></table></div>
+  </div>
+</div>
+
+<!-- CONTRATOS -->
+<div id="pg-contratos" class="page">
+  <div class="ph">
+    <div class="pt">Contratos</div>
+    <div class="ha">
+      <select class="si" id="cont-filtro" onchange="renderContratos()" style="width:180px"><option value="">Todos os eventos</option></select>
+      <button class="btn bo" onclick="abrirAditivo()">+ Aditivo</button>
+      <button class="btn bg" onclick="abrirDocPanel('contrato')">+ Novo Contrato</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="tc"><table><thead><tr><th>Nº</th><th>Evento</th><th>Cliente</th><th>Data Evento</th><th>Valor</th><th>Sinal</th><th>Tipo</th><th>Status</th><th></th></tr></thead><tbody id="tb-contratos"></tbody></table></div>
+  </div>
+</div>
+
+<!-- PRESTAÇÃO -->
+<div id="pg-prestacao" class="page">
+  <div class="ph">
+    <div class="pt">Prestação de <em>Contas</em></div>
+    <div class="ha">
+      <select class="si" id="prest-filtro" onchange="renderPrestacoes()" style="width:180px"><option value="">Todos os eventos</option></select>
+      <button class="btn bg" onclick="abrirDocPanel('prestacao')">+ Gerar Prestação</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="tc"><table><thead><tr><th>Evento</th><th>Cliente</th><th>Total Despesas</th><th>Adiantamento</th><th>Saldo</th><th>Gerada em</th><th></th></tr></thead><tbody id="tb-prestacao"></tbody></table></div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div id="pg-agenda" class="page">
+  <div class="ph"><div class="pt">Agenda & <em>Tarefas</em></div>
+    <div class="ha"><button class="btn bg" onclick="openModal('tarefa')">+ Nova Tarefa</button></div>
+  </div>
+  <div class="pb" id="agenda-body"></div>
+</div>
+
+<!-- COMPRAS -->
+<div id="pg-compras" class="page">
+  <div class="ph"><div class="pt">Compras por <em>Evento</em></div>
+    <div class="ha">
+      <select class="si" id="cp-filtro" onchange="renderCompras()" style="width:200px"><option value="">Todos os eventos</option></select>
+      <button class="btn bg" onclick="openModal('compra')">+ Nova Compra</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="kg k3" id="compras-kpis"></div>
+    <div class="tc"><table><thead><tr><th>Item</th><th>Evento</th><th>Fornecedor</th><th>Categoria</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody id="tb-compras"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ESTOQUE -->
+<div id="pg-estoque" class="page">
+  <div class="ph"><div class="pt">Estoque & <em>Acervo</em></div>
+    <div class="ha">
+      <input class="si" placeholder="Buscar item..." style="width:180px" oninput="renderEstoque(this.value)">
+      <button class="btn bo" onclick="openModal('ajuste')">Ajuste</button>
+      <button class="btn bg" onclick="openModal('item-estoque')">+ Novo Item</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="kg k4" id="estoque-kpis"></div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'te-todos')">Todos</div>
+      <div class="tab" onclick="switchTab(this,'te-acervo')">Acervo ARden</div>
+      <div class="tab" onclick="switchTab(this,'te-insumos')">Insumos</div>
+    </div>
+    <div id="te-todos" class="tp active"><div class="tc"><table><thead><tr><th>Item</th><th>Tipo</th><th>Categoria</th><th>Qtd</th><th>Mín</th><th>Situação</th><th>Custo/Locação</th><th>Val. Total</th><th></th></tr></thead><tbody id="tb-estoque-todos"></tbody></table></div></div>
+    <div id="te-acervo" class="tp"><div class="tc"><table><thead><tr><th>Item do Acervo</th><th>Categoria</th><th>Qtd Disponível</th><th>Valor de Locação</th><th>Em Uso</th><th></th></tr></thead><tbody id="tb-estoque-acervo"></tbody></table></div></div>
+    <div id="te-insumos" class="tp"><div class="tc"><table><thead><tr><th>Insumo</th><th>Categoria</th><th>Qtd</th><th>Mín</th><th>Situação</th><th>Custo Unit.</th><th></th></tr></thead><tbody id="tb-estoque-insumos"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- FINANCEIRO -->
+<div id="pg-financeiro" class="page">
+  <div class="ph"><div class="pt">Financeiro</div>
+    <div class="ha">
+      <button class="btn bo" onclick="openModal('pagar')">+ A Pagar</button>
+      <button class="btn bg" onclick="openModal('receber')">+ A Receber</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="kg k4" id="fin-kpis"></div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tf-receber')">A Receber</div>
+      <div class="tab" onclick="switchTab(this,'tf-pagar')">A Pagar</div>
+      <div class="tab" onclick="switchTab(this,'tf-margem')">Margem por Evento</div>
+    </div>
+    <div id="tf-receber" class="tp active"><div class="tc"><table><thead><tr><th>Descrição</th><th>Evento</th><th>Vencimento</th><th>Valor</th><th>Status</th><th></th></tr></thead><tbody id="tb-receber"></tbody></table></div></div>
+    <div id="tf-pagar" class="tp"><div class="tc"><table><thead><tr><th>Descrição</th><th>Evento</th><th>Vencimento</th><th>Valor</th><th>Status</th><th></th></tr></thead><tbody id="tb-pagar"></tbody></table></div></div>
+    <div id="tf-margem" class="tp"><div class="tc"><table><thead><tr><th>Evento</th><th>Receita</th><th>Custo Est.</th><th>Compras Reais</th><th>Lucro Real</th><th>Margem</th></tr></thead><tbody id="tb-margem"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- CONCILIAÇÃO -->
+<div id="pg-conciliacao" class="page">
+  <div class="ph"><div class="pt">Conciliação <em>Bancária</em></div>
+    <div class="ha"><button class="btn bg" onclick="openModal('lancamento')">+ Lançamento</button></div>
+  </div>
+  <div class="pb">
+    <div class="kg k3" id="conc-kpis"></div>
+    <div class="tc"><table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Evento</th><th>Tipo</th><th>Valor</th><th>Conciliado</th><th></th></tr></thead><tbody id="tb-lanc"></tbody></table></div>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div id="pg-clientes" class="page">
+  <div class="ph"><div class="pt">Clientes</div>
+    <div class="ha">
+      <input class="si" placeholder="Buscar..." style="width:180px">
+      <button class="btn bg" onclick="openModal('cliente')">+ Novo Cliente</button>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="tc"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Eventos</th><th>Total Gasto</th><th>Últ. Evento</th><th></th></tr></thead><tbody id="tb-clientes"></tbody></table></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- AI PANEL -->
+<div class="aip" id="ai-panel">
+  <div class="aih">
+    <div class="ait"><div class="ai-dot"></div>Assistente IA · ARden</div>
+    <button style="background:none;border:none;color:var(--td);cursor:pointer;font-size:18px" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="aim" id="ai-msgs">
+    <div class="aimsg bot">Olá! Sou o assistente da ARden. Posso analisar seu pipeline, calcular margens reais, verificar estoque e muito mais. O que deseja?</div>
+  </div>
+  <div class="chips">
+    <div class="chip" onclick="askAI('Qual evento tem a maior margem?')">Maior margem</div>
+    <div class="chip" onclick="askAI('Tenho itens com estoque baixo?')">Estoque baixo</div>
+    <div class="chip" onclick="askAI('Quais contas vencem essa semana?')">Contas vencendo</div>
+    <div class="chip" onclick="askAI('Quais compras estão pendentes?')">Compras pendentes</div>
+    <div class="chip" onclick="askAI('Qual o lucro total do mês atual?')">Lucro do mês</div>
+  </div>
+  <div class="aiinp">
+    <input type="text" id="ai-input" placeholder="Pergunte sobre gestão, finanças, estoque..." onkeydown="if(event.key==='Enter')sendAI()">
+    <button class="aisend" onclick="sendAI()">→</button>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+<div id="overlay" class="overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+
+<!-- EVENTO -->
+<div class="modal mlg" id="m-evento" style="display:none">
+  <div class="mh"><div class="mtl">Novo Lead / Evento</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb">
+    <div style="padding:10px 14px;background:rgba(201,168,76,.06);border:1px solid var(--gd);border-radius:var(--rs);font-size:12px;color:var(--aml);margin-bottom:16px;line-height:1.6">
+      ✦ Ao criar, o evento entra como <strong>Lead</strong> no pipeline. O sistema vai abrir automaticamente a proposta para você montar e enviar ao cliente.
+    </div>
+    <div class="fg fg2">
+      <div class="fi fgf"><label>Nome do Evento / Cliente</label><input id="ev-nome" placeholder="Ex: Decoração UMADESPA — Igreja + Principal"></div>
+      <div class="fi"><label>Cliente (cadastrado)</label><select id="ev-cli"></select></div>
+      <div class="fi"><label>Nome do Cliente (se não cadastrado)</label><input id="ev-cli-nome" placeholder="Ou digite o nome direto"></div>
+      <div class="fi"><label>WhatsApp do Cliente</label><input id="ev-cli-tel" placeholder="(22) 99999-9999"></div>
+      <div class="fi"><label>Data do Evento</label><input id="ev-data" type="date"></div>
+      <div class="fi"><label>Horário</label><input id="ev-hora" type="time"></div>
+      <div class="fi fgf"><label>Local / Endereço</label><input id="ev-local" placeholder="Rua, número, cidade..."></div>
+      <div class="fi"><label>Tipo de Evento</label>
+        <select id="ev-tipo"><option>Decoração de Ambientes</option><option>Decoração com Balões</option><option>Completo (Ambiente + Balões)</option><option>Festa Infantil</option><option>Casamento</option><option>Aniversário</option><option>Corporativo / Institucional</option><option>Igreja / Religioso</option><option>Outro</option></select></div>
+      <div class="fi"><label>Valor Estimado (R$)</label><input id="ev-receita" type="number" placeholder="0,00"></div>
+      <div class="fi fgf"><label>Briefing / Observações iniciais</label><textarea id="ev-desc" placeholder="Tema, cores, referências, o que o cliente pediu..."></textarea></div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn bo" onclick="closeModal()">Só Salvar (sem abrir proposta)</button>
+    <button class="btn bg" onclick="salvarEvento(true)">✦ Criar e Montar Proposta →</button>
+  </div>
+</div>
+
+
+<!-- COMPRA -->
+<div class="modal mlg" id="m-compra" style="display:none">
+  <div class="mh"><div class="mtl">Nova Compra</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb">
+    <div class="fg fg2">
+      <div class="fi fgf"><label>Item / Produto</label><input id="cp-nome" placeholder="Ex: Balões Cromados Dourado 36cm"></div>
+      <div class="fi"><label>Evento</label><select id="cp-ev"></select></div>
+      <div class="fi"><label>Fornecedor</label><input id="cp-forn" placeholder="Nome do fornecedor / loja"></div>
+      <div class="fi"><label>Categoria</label>
+        <select id="cp-cat"><option>Balões</option><option>Orbs / Bubbles</option><option>Tecidos</option><option>Consumíveis e Acabamento</option><option>Painel — Letras e Pintura</option><option>Flores e Arranjos</option><option>Iluminação</option><option>Fitas e Laços</option><option>Estruturas e Suportes</option><option>Descartáveis</option><option>Outros Insumos</option></select></div>
+      <div class="fi"><label>Tipo de Comprovante</label>
+        <select id="cp-comprov"><option>Cupom Fiscal NFC-e</option><option>Pedido Shopee</option><option>Pedido Mercado Livre</option><option>Nota Fiscal</option><option>Recibo</option><option>Sem comprovante</option></select></div>
+      <div class="fi"><label>Qtd</label><input id="cp-qtd" type="number" placeholder="0" oninput="calcCpTotal()"></div>
+      <div class="fi"><label>Unidade</label><select id="cp-un"><option>un</option><option>kg</option><option>m</option><option>caixa</option><option>pacote</option><option>rolo</option></select></div>
+      <div class="fi"><label>Valor Unitário (R$)</label><input id="cp-vunit" type="number" placeholder="0,00" oninput="calcCpTotal()"></div>
+      <div class="fi"><label>Total</label><input id="cp-total" readonly style="color:var(--gold)"></div>
+      <div class="fi"><label>Data da Compra</label><input id="cp-data" type="date"></div>
+      <div class="fi"><label>Status</label>
+        <select id="cp-status"><option>Pendente</option><option>Comprado</option><option>Em Trânsito</option><option>Entregue</option><option>Cancelado</option></select></div>
+      <div class="fi fgf" style="display:flex;align-items:center;gap:10px">
+        <input type="checkbox" id="cp-estoq" style="width:16px">
+        <label style="text-transform:none;font-size:12px;color:var(--tm);letter-spacing:0">Dar entrada automática no estoque ao marcar como Entregue</label>
+      </div>
+    </div>
+  </div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarCompra()">Salvar</button></div>
+</div>
+
+<!-- ITEM ESTOQUE -->
+<div class="modal" id="m-item-estoque" style="display:none">
+  <div class="mh"><div class="mtl">Novo Item no Estoque</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb">
+    <div class="fg fg2">
+      <div class="fi fgf"><label>Nome do Item</label><input id="es-nome" placeholder="Ex: Balão bexiga 9pol vermelho"></div>
+      <div class="fi"><label>Tipo</label>
+        <select id="es-tipo" onchange="toggleAcervoFields()">
+          <option value="insumo">Insumo / Material</option>
+          <option value="acervo">Acervo ARden (locação)</option>
+        </select></div>
+      <div class="fi"><label>Categoria</label>
+        <select id="es-cat"><option>Balões</option><option>Orbs / Bubbles</option><option>Tecidos</option><option>Consumíveis</option><option>Painéis</option><option>Iluminação</option><option>Fitas e Laços</option><option>Estruturas</option><option>Acervo — Painel</option><option>Acervo — Iluminação</option><option>Acervo — Estrutura</option><option>Acervo — Outros</option></select></div>
+      <div class="fi"><label>Unidade</label><select id="es-un"><option>un</option><option>kg</option><option>m</option><option>caixa</option><option>pacote</option></select></div>
+      <div class="fi"><label>Qtd Atual</label><input id="es-qtd" type="number" placeholder="0"></div>
+      <div class="fi"><label>Qtd Mínima (alerta)</label><input id="es-min" type="number" placeholder="5"></div>
+      <div class="fi" id="es-custo-wrap"><label>Custo Unitário (R$)</label><input id="es-custo" type="number" placeholder="0,00"></div>
+      <div class="fi" id="es-locacao-wrap" style="display:none"><label>Valor de Locação (R$)</label><input id="es-locacao" type="number" placeholder="0,00"></div>
+      <div class="fi fgf"><label>Localização / Observações</label><input id="es-obs" placeholder="Ex: Prateleira A3, caixa azul"></div>
+    </div>
+  </div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarItemEstoque()">Salvar</button></div>
+</div>
+
+<!-- AJUSTE ESTOQUE -->
+<div class="modal" id="m-ajuste" style="display:none">
+  <div class="mh"><div class="mtl">Ajuste de Estoque</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb">
+    <div class="fg fg2">
+      <div class="fi fgf"><label>Item</label><select id="aj-item"></select></div>
+      <div class="fi"><label>Tipo de Ajuste</label><select id="aj-tipo"><option value="entrada">Entrada (+)</option><option value="saida">Saída (−)</option><option value="acerto">Acerto (definir valor)</option></select></div>
+      <div class="fi"><label>Quantidade</label><input id="aj-qtd" type="number" placeholder="0"></div>
+      <div class="fi fgf"><label>Motivo</label><input id="aj-motivo" placeholder="Ex: Compra, uso em evento, perda, inventário..."></div>
+    </div>
+  </div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarAjuste()">Aplicar</button></div>
+</div>
+
+<!-- PAGAR / RECEBER / TAREFA / LANCAMENTO -->
+<div class="modal" id="m-pagar" style="display:none">
+  <div class="mh"><div class="mtl">Conta a Pagar</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb"><div class="fg fg2">
+    <div class="fi fgf"><label>Descrição</label><input id="pg-desc" placeholder="Ex: Balões Vivian Festas"></div>
+    <div class="fi"><label>Evento</label><select id="pg-ev"></select></div>
+    <div class="fi"><label>Categoria</label><select id="pg-cat"><option>Insumos/Materiais</option><option>Fornecedor</option><option>Transporte</option><option>Aluguel</option><option>Freelancer</option><option>Imposto/Taxa</option><option>Outros</option></select></div>
+    <div class="fi"><label>Valor (R$)</label><input id="pg-val" type="number" placeholder="0,00"></div>
+    <div class="fi"><label>Vencimento</label><input id="pg-venc" type="date"></div>
+    <div class="fi"><label>Status</label><select id="pg-status"><option>Pendente</option><option>Pago</option></select></div>
+  </div></div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarConta('pagar')">Salvar</button></div>
+</div>
+
+<div class="modal" id="m-receber" style="display:none">
+  <div class="mh"><div class="mtl">Conta a Receber</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb"><div class="fg fg2">
+    <div class="fi fgf"><label>Descrição</label><input id="rc-desc" placeholder="Ex: Sinal UMADESPA"></div>
+    <div class="fi"><label>Evento</label><select id="rc-ev"></select></div>
+    <div class="fi"><label>Categoria</label><select id="rc-cat"><option>Sinal/Entrada</option><option>Pagamento Final</option><option>Saldo Prestação</option><option>Parcela</option><option>Outros</option></select></div>
+    <div class="fi"><label>Valor (R$)</label><input id="rc-val" type="number" placeholder="0,00"></div>
+    <div class="fi"><label>Vencimento</label><input id="rc-venc" type="date"></div>
+    <div class="fi"><label>Status</label><select id="rc-status"><option>Pendente</option><option>Recebido</option></select></div>
+  </div></div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarConta('receber')">Salvar</button></div>
+</div>
+
+<div class="modal" id="m-tarefa" style="display:none">
+  <div class="mh"><div class="mtl">Nova Tarefa</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb"><div class="fg fg2">
+    <div class="fi fgf"><label>Tarefa</label><input id="ta-nome" placeholder="Ex: Comprar balões cromados dourado"></div>
+    <div class="fi"><label>Evento</label><select id="ta-ev"></select></div>
+    <div class="fi"><label>Categoria</label><select id="ta-cat"><option>Compra de Insumo</option><option>Contato com Fornecedor</option><option>Produção/Montagem</option><option>Entrega/Logística</option><option>Administrativo</option><option>Financeiro</option><option>Comercial</option></select></div>
+    <div class="fi"><label>Prazo</label><input id="ta-prazo" type="date"></div>
+    <div class="fi"><label>Prioridade</label><select id="ta-prio"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+  </div></div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarTarefa()">Salvar</button></div>
+</div>
+
+<div class="modal" id="m-lancamento" style="display:none">
+  <div class="mh"><div class="mtl">Lançamento Bancário</div><button class="mc" onclick="closeModal()">✕</button></div>
+  <div class="mb"><div class="fg fg2">
+    <div class="fi fgf"><label>Descrição</label><input id="la-desc" placeholder="Ex: Pix recebido UMADESPA"></div>
+    <div class="fi"><label>Data</label><input id="la-data" type="date"></div>
+    <div class="fi"><label>Tipo</label><select id="la-tipo"><option>Entrada</option><option>Saída</option></select></div>
+    <div class="fi"><label>Valor (R$)</label><input id="la-val" type="number" placeholder="0,00"></div>
+    <div class="fi"><label>Categoria</label><select id="la-cat"><option>Recebimento de Cliente</option><option>Compra de Insumos</option><option>Fornecedor</option><option>Transporte</option><option>Taxa/Imposto</option><option>Outros</option></select></div>
+    <div class="fi"><label>Evento</label><select id="la-ev"></select></div>
+  </div></div>
+  <div class="mf"><button class="btn bo" onclick="closeModal()">Cancelar</button><button class="btn bg" onclick="salvarLancamento()">Salvar</button></div>
+</div>
+
+</div><!-- /overlay -->
+
+
+<!-- DOCUMENT PANEL (full-screen slide-over) -->
+<div class="doc-panel" id="doc-panel">
+  <div class="doc-form">
+    <div class="doc-form-head">
+      <div class="doc-form-title" id="dp-title">Nova Proposta</div>
+      <button class="doc-form-close" onclick="fecharDocPanel()">✕</button>
+    </div>
+    <div class="doc-form-scroll" id="dp-scroll"></div>
+    <div class="doc-form-foot">
+      <button class="btn bg" style="flex:1" onclick="imprimirDocPanel()">🖨 Imprimir / PDF</button>
+      <button class="btn" style="flex:1;border:1px solid var(--bd2);border-radius:var(--rs);padding:9px 14px;font-size:12px;cursor:pointer;color:var(--tm);font-family:'DM Sans',sans-serif" onclick="salvarDocPanel()">💾 Salvar</button>
+    </div>
+  </div>
+  <div class="doc-preview-area" id="dp-preview">
+    <div class="doc-preview-empty" id="dp-empty">
+      <div class="doc-preview-empty-logo">ARden</div>
+      <div class="doc-preview-empty-txt">Preencha os dados para visualizar</div>
+    </div>
+    <div id="dp-out" style="display:none;width:794px"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE & UTILS
+// ═══════════════════════════════════════
+let S={eventos:[],clientes:[],compras:[],estoque:[],contas:[],tarefas:[],lancamentos:[],propostas:[],contratos:[],prestacoes:[]};
+
+const uid=()=>Math.random().toString(36).substr(2,9);
+const td=()=>new Date().toISOString().split('T')[0];
+const fR=x=>'R$ '+Number(x||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fD=s=>{if(!s||s==='—')return'—';try{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;}catch(e){return s;}};
+const isV=s=>{if(!s)return false;return new Date(s)<new Date();};
+const clNome=id=>{const c=S.clientes.find(c=>c.id===id);return c?c.nome:'';};
+const evNome=id=>{const e=S.eventos.find(e=>e.id===id);return e?e.nome:'';};
+const sb=f=>`<span class="badge ${FASE_CLS[f]||'ba2'}">${f||'—'}</span>`;
+
+const FASES=['Lead','Proposta Enviada','Aguardando Aprovação','Confirmado','Em Produção','Concluído','Cancelado'];
+const FASE_CLS={'Lead':'s-lead','Proposta Enviada':'s-proposta','Aguardando Aprovação':'s-aguard','Confirmado':'s-confirmado','Em Produção':'s-producao','Concluído':'s-concluido','Cancelado':'s-cancelado'};
+const FASE_TASKS={'Lead':'Montar e enviar proposta comercial ao cliente','Proposta Enviada':'Fazer follow-up / aguardar aprovação','Aguardando Aprovação':'Confirmar aprovação e gerar contrato','Confirmado':'Coletar assinatura e receber sinal','Em Produção':'Realizar compras de insumos','Concluído':'Enviar prestação de contas ao cliente'};
+const pColors={Alta:'br2',Média:'ba2',Baixa:'bb2'};
+
+function load(){try{const s=localStorage.getItem('arden_v4');if(s)S=JSON.parse(s);}catch(e){}}
+function save(){try{localStorage.setItem('arden_v4',JSON.stringify(S));}catch(e){}}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{
+    if(n.getAttribute('onclick')==="nav('"+id+"')")n.classList.add('active');
+  });
+  const renders={
+    dashboard:renderDash,pipeline:renderPipeline,eventos:renderEventos,
+    propostas:renderPropostas,contratos:renderContratos,prestacao:renderPrestacoes,
+    agenda:renderAgenda,compras:renderCompras,estoque:renderEstoque,
+    financeiro:renderFinanceiro,conciliacao:renderConc,clientes:renderClientes
+  };
+  if(renders[id])renders[id]();
+}
+
+function openModal(id){
+  document.getElementById('overlay').style.display='flex';
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+  const m=document.getElementById('m-'+id);
+  if(m)m.style.display='block';
+  populateSels();
+}
+function closeModal(){
+  document.getElementById('overlay').style.display='none';
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+}
+
+function populateSels(){
+  const evOpts='<option value="">— Geral —</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
+  const evOpts2='<option value="">— Selecionar Evento —</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
+  const cliOpts='<option value="">— Sem cliente —</option>'+S.clientes.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  ['cp-ev','ta-ev','la-ev'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=evOpts;});
+  ['pg-ev','rc-ev'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=evOpts;});
+  const evCli=document.getElementById('ev-cli');if(evCli)evCli.innerHTML=cliOpts;
+  const ajSel=document.getElementById('aj-item');
+  if(ajSel)ajSel.innerHTML=S.estoque.map(i=>`<option value="${i.id}">${i.nome}</option>`).join('');
+  const cpFilt=document.getElementById('cp-filtro');
+  if(cpFilt)cpFilt.innerHTML='<option value="">Todos os eventos</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
+  const propFilt=document.getElementById('prop-filtro');
+  if(propFilt){const cv=propFilt.value;propFilt.innerHTML='<option value="">Todos os eventos</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');propFilt.value=cv;}
+  const contFilt=document.getElementById('cont-filtro');
+  if(contFilt){const cv=contFilt.value;contFilt.innerHTML='<option value="">Todos os eventos</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');contFilt.value=cv;}
+  const prestFilt=document.getElementById('prest-filtro');
+  if(prestFilt){const cv=prestFilt.value;prestFilt.innerHTML='<option value="">Todos os eventos</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');prestFilt.value=cv;}
+}
+
+// ═══════════════════════════════════════
+// FORM HELPERS
+// ═══════════════════════════════════════
+function toggleAcervoFields(){
+  const t=document.getElementById('es-tipo').value;
+  const cw=document.getElementById('es-custo-wrap');
+  const lw=document.getElementById('es-locacao-wrap');
+  if(cw)cw.style.display=t==='acervo'?'none':'';
+  if(lw)lw.style.display=t==='acervo'?'':'none';
+}
+function calcCpTotal(){
+  const q=parseFloat(document.getElementById('cp-qtd').value)||0;
+  const v=parseFloat(document.getElementById('cp-vunit').value)||0;
+  const el=document.getElementById('cp-total');
+  if(el)el.value=fR(q*v);
+}
+
+// ═══════════════════════════════════════
+// SAVE FUNCTIONS
+// ═══════════════════════════════════════
+function salvarEvento(abrirProposta=false){
+  const nome=document.getElementById('ev-nome').value.trim();
+  if(!nome)return alert('Informe o nome do evento');
+  const cliId=document.getElementById('ev-cli').value;
+  let resolvedCliId=cliId;
+  let resolvedCliNome='';
+  if(cliId){
+    resolvedCliNome=clNome(cliId);
+  } else {
+    const cliNomeDigitado=(document.getElementById('ev-cli-nome')?.value||'').trim();
+    const cliTel=(document.getElementById('ev-cli-tel')?.value||'').trim();
+    if(cliNomeDigitado){
+      const novoId=uid();
+      S.clientes.push({id:novoId,nome:cliNomeDigitado,tel:cliTel,email:'',doc:'',end:'',obs:'Auto-cadastrado ao criar evento.',criado:td()});
+      resolvedCliId=novoId;
+      resolvedCliNome=cliNomeDigitado;
+    }
+  }
+  const ev={
+    id:uid(),nome,cliId:resolvedCliId,cliNome:resolvedCliNome,
+    data:document.getElementById('ev-data').value,
+    hora:document.getElementById('ev-hora').value,
+    local:document.getElementById('ev-local').value,
+    tipo:document.getElementById('ev-tipo').value,
+    receita:parseFloat(document.getElementById('ev-receita').value)||0,
+    fase:'Lead',desc:document.getElementById('ev-desc').value,criado:td()
+  };
+  S.eventos.push(ev);
+  S.tarefas.push({id:uid(),nome:'Montar e enviar proposta comercial ao cliente',eventoId:ev.id,eventoNome:ev.nome,cat:'Comercial',prazo:'',prio:'Alta',done:false,auto:true,criado:td()});
+  save();closeModal();
+  renderDash();renderPipeline();renderEventos();renderAgenda();renderClientes();populateSels();
+  if(abrirProposta)abrirDocPanel('proposta',ev.id);
+}
+
+function salvarCliente(){
+  const nome=document.getElementById('cl-nome').value.trim();
+  if(!nome)return alert('Informe o nome');
+  S.clientes.push({id:uid(),nome,tel:document.getElementById('cl-tel').value,email:document.getElementById('cl-email').value,doc:document.getElementById('cl-doc').value,end:document.getElementById('cl-end').value,obs:document.getElementById('cl-obs').value,criado:td()});
+  save();closeModal();renderClientes();populateSels();
+}
+
+function salvarCompra(){
+  const nome=document.getElementById('cp-nome').value.trim();
+  if(!nome)return alert('Informe o nome da compra');
+  const evId=document.getElementById('cp-ev').value;
+  const qtd=parseFloat(document.getElementById('cp-qtd').value)||0;
+  const vunit=parseFloat(document.getElementById('cp-vunit').value)||0;
+  const status=document.getElementById('cp-status').value;
+  const c={
+    id:uid(),nome,eventoId:evId,eventoNome:evId?evNome(evId):'Geral',
+    forn:document.getElementById('cp-forn').value,
+    cat:document.getElementById('cp-cat').value,
+    comprov:document.getElementById('cp-comprov').value,
+    qtd,un:document.getElementById('cp-un').value,vunit,total:qtd*vunit,
+    data:document.getElementById('cp-data').value||td(),
+    status,criado:td()
+  };
+  S.compras.push(c);
+  if(status==='Entregue'&&document.getElementById('cp-estoq').checked){
+    const existing=S.estoque.find(i=>i.nome.toLowerCase()===nome.toLowerCase());
+    if(existing){existing.qtd+=qtd;existing.atualizado=td();}
+    else{S.estoque.push({id:uid(),nome,tipo:'insumo',cat:c.cat,un:c.un,qtd,min:0,custo:vunit,locacao:0,obs:'',atualizado:td()});}
+  }
+  save();closeModal();renderCompras();renderEstoque();renderPipeline();
+}
+
+function salvarItemEstoque(){
+  const nome=document.getElementById('es-nome').value.trim();
+  if(!nome)return alert('Informe o nome');
+  const tipo=document.getElementById('es-tipo').value;
+  S.estoque.push({id:uid(),nome,tipo,cat:document.getElementById('es-cat').value,un:document.getElementById('es-un').value,qtd:parseFloat(document.getElementById('es-qtd').value)||0,min:parseFloat(document.getElementById('es-min').value)||0,custo:parseFloat(document.getElementById('es-custo').value)||0,locacao:parseFloat(document.getElementById('es-locacao').value)||0,obs:document.getElementById('es-obs').value,atualizado:td()});
+  save();closeModal();renderEstoque();
+}
+
+function salvarAjuste(){
+  const itemId=document.getElementById('aj-item').value;
+  const item=S.estoque.find(i=>i.id===itemId);
+  if(!item)return;
+  const tipo=document.getElementById('aj-tipo').value;
+  const qtd=parseFloat(document.getElementById('aj-qtd').value)||0;
+  item.qtd=tipo==='entrada'?item.qtd+qtd:Math.max(0,item.qtd-qtd);
+  item.atualizado=td();
+  save();closeModal();renderEstoque();
+}
+
+function salvarLancamento(){
+  const desc=document.getElementById('la-desc').value.trim();
+  if(!desc)return alert('Informe a descrição');
+  const evId=document.getElementById('la-ev').value;
+  S.lancamentos.push({id:uid(),desc,data:document.getElementById('la-data').value||td(),tipo:document.getElementById('la-tipo').value,valor:parseFloat(document.getElementById('la-val').value)||0,cat:document.getElementById('la-cat').value,eventoId:evId,eventoNome:evId?evNome(evId):'',conciliado:false,criado:td()});
+  save();closeModal();renderConc();
+}
+
+function salvarTarefa(){
+  const nome=document.getElementById('ta-nome').value.trim();
+  if(!nome)return alert('Informe a tarefa');
+  const evId=document.getElementById('ta-ev').value;
+  S.tarefas.push({id:uid(),nome,eventoId:evId,eventoNome:evId?evNome(evId):'',cat:document.getElementById('ta-cat').value,prazo:document.getElementById('ta-prazo').value,prio:document.getElementById('ta-prio').value,done:false,criado:td()});
+  save();closeModal();renderAgenda();
+}
+
+function salvarConta(tipo){
+  const pre=tipo==='pagar'?'pg':'rc';
+  const desc=document.getElementById(pre+'-desc').value.trim();
+  if(!desc)return alert('Informe a descrição');
+  const evId=document.getElementById(pre+'-ev').value;
+  S.contas.push({id:uid(),tipo,desc,eventoId:evId,eventoNome:evId?evNome(evId):'Geral',cat:document.getElementById(pre+'-cat').value,valor:parseFloat(document.getElementById(pre+'-val').value)||0,venc:document.getElementById(pre+'-venc').value,status:document.getElementById(pre+'-status').value,criado:td()});
+  save();closeModal();renderFinanceiro();renderDash();
+}
+
+// ═══════════════════════════════════════
+// AUTO TASK & FASE LOGIC
+// ═══════════════════════════════════════
+function autoTask(ev,fase){
+  S.tarefas=S.tarefas.filter(t=>!(t.eventoId===ev.id&&t.auto&&!t.done));
+  if(FASE_TASKS[fase]){
+    S.tarefas.push({id:uid(),nome:FASE_TASKS[fase],eventoId:ev.id,eventoNome:ev.nome,cat:'Comercial',prazo:'',prio:'Alta',done:false,auto:true,criado:td()});
+  }
+}
+
+function mudarFase(evId,fase){
+  const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+  ev.fase=fase;autoTask(ev,fase);
+  save();renderPipeline();renderEventos();renderDash();
+}
+
+function avancarFase(evId,novaFase){
+  const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+  ev.fase=novaFase;autoTask(ev,novaFase);
+  save();renderPipeline();renderEventos();renderDash();
+}
+
+function mudarStatusCompra(id,status){
+  const c=S.compras.find(c=>c.id===id);if(!c)return;
+  c.status=status;
+  if(status==='Entregue'){
+    const existing=S.estoque.find(i=>i.nome.toLowerCase()===c.nome.toLowerCase());
+    if(existing){existing.qtd+=c.qtd;existing.atualizado=td();}
+    else{S.estoque.push({id:uid(),nome:c.nome,tipo:'insumo',cat:c.cat,un:c.un,qtd:c.qtd,min:0,custo:c.vunit,locacao:0,obs:'',atualizado:td()});}
+    renderEstoque();
+  }
+  save();renderCompras();
+}
+
+function baixarConta(id){
+  const c=S.contas.find(c=>c.id===id);if(!c)return;
+  if(c.tipo==='pagar')c.status=c.status==='Pago'?'Pendente':'Pago';
+  else c.status=c.status==='Recebido'?'Pendente':'Recebido';
+  save();renderFinanceiro();renderDash();
+}
+
+function toggleTask(id){const t=S.tarefas.find(t=>t.id===id);if(t){t.done=!t.done;save();renderAgenda();}}
+function toggleConc(id){const l=S.lancamentos.find(l=>l.id===id);if(l){l.conciliado=!l.conciliado;save();renderConc();}}
+function assinarContrato(id){
+  const c=S.contratos.find(c=>c.id===id);if(!c)return;
+  c.status='Assinado';
+  const ev=S.eventos.find(e=>e.id===c.eventoId);
+  if(ev){ev.fase='Em Produção';autoTask(ev,'Em Produção');}
+  save();renderContratos();renderPipeline();renderDash();renderEventos();
+}
+function aprovarProposta(id){
+  const p=S.propostas.find(p=>p.id===id);if(!p)return;
+  p.status='Aprovada';
+  const ev=S.eventos.find(e=>e.id===p.eventoId);
+  if(ev&&ev.fase==='Proposta Enviada'){ev.fase='Aguardando Aprovação';autoTask(ev,'Aguardando Aprovação');}
+  save();renderPropostas();renderPipeline();renderDash();
+  if(confirm('Proposta marcada como Aprovada!\n\nDeseja gerar o Contrato agora?'))abrirDocPanel('contrato',p.eventoId);
+}
+
+function del(coll,id,silent){
+  if(!silent&&!confirm('Excluir este item?'))return;
+  S[coll]=S[coll].filter(i=>i.id!==id);save();
+  const map={eventos:()=>{renderEventos();renderDash();renderPipeline();},clientes:renderClientes,compras:()=>{renderCompras();renderEstoque();},estoque:renderEstoque,contas:()=>{renderFinanceiro();renderDash();},tarefas:renderAgenda,lancamentos:renderConc,propostas:renderPropostas,contratos:renderContratos,prestacoes:renderPrestacoes};
+  if(map[coll])map[coll]();
+}
+
+function switchTab(el,pid){
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const parent=el.closest('.page');
+  if(parent)parent.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  const target=document.getElementById(pid);
+  if(target)target.classList.add('active');
+}
+
+function exportCSV(){
+  let rows=[['ARden v4 — Relatório'],['Exportado',td()],[]];
+  rows.push(['EVENTOS','','','','','','']);
+  rows.push(['Nome','Cliente','Data','Fase','Receita','Compras','Lucro']);
+  S.eventos.forEach(e=>{const cp=S.compras.filter(c=>c.eventoId===e.id).reduce((s,c)=>s+c.total,0);rows.push([e.nome,e.cliNome,e.data,e.fase,e.receita,cp,e.receita-cp]);});
+  rows.push([],['COMPRAS','','','','','','']);
+  rows.push(['Item','Evento','Fornecedor','Categoria','Qtd','Valor','Status']);
+  S.compras.forEach(c=>rows.push([c.nome,c.eventoNome,c.forn,c.cat,c.qtd,c.total,c.status]));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='ARden_v4_'+td()+'.csv';a.click();
+}
+
+// ═══════════════════════════════════════
+// RENDER: DASHBOARD
+// ═══════════════════════════════════════
+function renderDash(){
+  const receita=S.eventos.reduce((s,e)=>s+e.receita,0);
+  const compras=S.compras.reduce((s,c)=>s+c.total,0);
+  const lucro=receita-compras;
+  const ativos=S.eventos.filter(e=>!['Concluído','Cancelado'].includes(e.fase)).length;
+  const kpis=document.getElementById('dash-kpis');
+  if(kpis)kpis.innerHTML=`
+    <div class="kpi"><div class="kl">Receita Total</div><div class="kv gold">${fR(receita)}</div><div class="ks">${S.eventos.length} evento(s)</div></div>
+    <div class="kpi"><div class="kl">Total em Compras</div><div class="kv red">${fR(compras)}</div><div class="ks">Insumos reais</div></div>
+    <div class="kpi"><div class="kl">Lucro Estimado</div><div class="kv green">${fR(lucro)}</div><div class="ks">Margem: ${receita>0?((lucro/receita)*100).toFixed(1):0}%</div></div>
+    <div class="kpi"><div class="kl">Em Andamento</div><div class="kv blue">${ativos}</div><div class="ks">Eventos ativos</div></div>`;
+
+  const NEXT={
+    'Lead':{label:'✦ Montar Proposta',fn:id=>'abrirDocPanel(&quot;proposta&quot;,&quot;'+id+'&quot;)'},
+    'Proposta Enviada':{label:'✎ Gerar Contrato',fn:id=>'abrirDocPanel(&quot;contrato&quot;,&quot;'+id+'&quot;)'},
+    'Aguardando Aprovação':{label:'✎ Gerar Contrato',fn:id=>'abrirDocPanel(&quot;contrato&quot;,&quot;'+id+'&quot;)'},
+    'Confirmado':{label:'▣ Lançar Compras',fn:id=>'irCompras(&quot;'+id+'&quot;)'},
+    'Em Produção':{label:'◉ Gerar Prestação',fn:id=>'abrirDocPanel(&quot;prestacao&quot;,&quot;'+id+'&quot;)'}
+  };
+  const sorted=[...S.eventos].filter(e=>e.fase!=='Cancelado').sort((a,b)=>new Date(a.data||'9999')-new Date(b.data||'9999'));
+  const tb=document.getElementById('tb-dash-ev');
+  if(tb)tb.innerHTML=sorted.length?sorted.map(e=>{
+    const cp=S.compras.filter(c=>c.eventoId===e.id).reduce((s,c)=>s+c.total,0);
+    const l=e.receita-cp;const m=e.receita>0?((l/e.receita)*100).toFixed(0):0;
+    const act=NEXT[e.fase];
+    return`<tr>
+      <td class="tdm">${e.nome}</td><td style="font-size:11px">${e.cliNome||'—'}</td>
+      <td>${fD(e.data)}</td><td>${sb(e.fase)}</td>
+      <td><span class="badge ${parseInt(m)>=40?'bg2':'ba2'}">${m}%</span></td>
+      <td>${act?`<button onclick="${act.fn(e.id)}" style="padding:3px 9px;border-radius:4px;border:1px solid var(--gd);background:rgba(201,168,76,.1);color:var(--gl);font-size:10px;cursor:pointer;white-space:nowrap">${act.label}</button>`:''}</td>
+    </tr>`;}).join(''):'<tr class="er"><td colspan="6">Nenhum evento. Clique em "+ Novo Evento".</td></tr>';
+
+  const estoqBaixo=S.estoque.filter(i=>i.tipo!=='acervo'&&i.qtd<=i.min&&i.min>0);
+  const venc=S.contas.filter(c=>isV(c.venc)&&!['Pago','Recebido'].includes(c.status));
+  const atrasadas=S.tarefas.filter(t=>!t.done&&t.prazo&&isV(t.prazo));
+  const semProposta=S.eventos.filter(e=>e.fase==='Lead'&&!S.propostas.find(p=>p.eventoId===e.id));
+  const alBox=(cls,t,m)=>`<div class="alert"><span class="badge ${cls}" style="flex-shrink:0;align-self:flex-start;margin-top:1px">${t}</span><span style="font-size:12px;color:var(--tm)">${m}</span></div>`;
+  let al='';
+  semProposta.forEach(e=>al+=alBox('ba2','Sem proposta',e.nome+' — <button onclick="abrirDocPanel(\'proposta\',\''+e.id+'\')" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:11px;text-decoration:underline">Criar agora</button>'));
+  estoqBaixo.forEach(i=>al+=alBox('ba2','Estoque baixo',i.nome+': '+i.qtd+' '+i.un));
+  venc.forEach(c=>al+=alBox('br2','Conta vencida',c.desc+' — '+fR(c.valor)));
+  atrasadas.forEach(t=>al+=alBox('ba2','Tarefa atrasada',t.nome));
+  if(!al)al='<div style="padding:14px;color:var(--td);font-size:12px;text-align:center;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r)">Tudo em dia ✓</div>';
+  const dashAl=document.getElementById('dash-alertas');
+  if(dashAl)dashAl.innerHTML=al;
+}
+
+// ═══════════════════════════════════════
+// RENDER: PIPELINE
+// ═══════════════════════════════════════
+function renderPipeline(){
+  const COLS=['Lead','Proposta Enviada','Aguardando Aprovação','Confirmado','Em Produção','Concluído'];
+  const SLG={'Lead':'lead','Proposta Enviada':'proposta','Aguardando Aprovação':'aguard','Confirmado':'confirmado','Em Produção':'producao','Concluído':'concluido'};
+  const CFG={
+    'Lead':{primary:{label:'✦ Montar Proposta',fn:id=>`abrirDocPanel('proposta','${id}')`},secondary:[{label:'✓ Proposta já enviada',fn:id=>`avancarFase('${id}','Proposta Enviada')`},{label:'✗ Cancelar',fn:id=>`avancarFase('${id}','Cancelado')`}]},
+    'Proposta Enviada':{primary:{label:'✎ Gerar Contrato',fn:id=>`abrirDocPanel('contrato','${id}')`},secondary:[{label:'✓ Cliente aprovou',fn:id=>`avancarFase('${id}','Aguardando Aprovação')`},{label:'↩ Voltar para Lead',fn:id=>`avancarFase('${id}','Lead')`},{label:'✗ Cancelar',fn:id=>`avancarFase('${id}','Cancelado')`}]},
+    'Aguardando Aprovação':{primary:{label:'✎ Gerar Contrato',fn:id=>`abrirDocPanel('contrato','${id}')`},secondary:[{label:'✓ Contrato assinado',fn:id=>`avancarFase('${id}','Confirmado')`},{label:'↩ Proposta Enviada',fn:id=>`avancarFase('${id}','Proposta Enviada')`}]},
+    'Confirmado':{primary:{label:'▣ Lançar Compras',fn:id=>`irCompras('${id}')`},secondary:[{label:'→ Iniciar Produção',fn:id=>`avancarFase('${id}','Em Produção')`},{label:'✗ Cancelar',fn:id=>`avancarFase('${id}','Cancelado')`}]},
+    'Em Produção':{primary:{label:'◉ Gerar Prestação',fn:id=>`abrirDocPanel('prestacao','${id}')`},secondary:[{label:'+ Lançar Compra',fn:id=>`irCompras('${id}')`},{label:'✓ Concluir',fn:id=>`avancarFase('${id}','Concluído')`}]},
+    'Concluído':{primary:null,secondary:[{label:'↩ Reabrir',fn:id=>`avancarFase('${id}','Em Produção')`},{label:'◉ Nova Prestação',fn:id=>`abrirDocPanel('prestacao','${id}')`}]}
+  };
+  const board=document.getElementById('kb-board');
+  if(!board)return;
+  let html='';
+  COLS.forEach(col=>{
+    const evs=S.eventos.filter(e=>e.fase===col);
+    const cfg=CFG[col];
+    let cards='';
+    evs.forEach(e=>{
+      const cp=S.compras.filter(c=>c.eventoId===e.id).reduce((s,c)=>s+c.total,0);
+      const margem=e.receita>0?(((e.receita-cp)/e.receita)*100).toFixed(0):0;
+      const hasProp=S.propostas.some(p=>p.eventoId===e.id);
+      const hasCont=S.contratos.some(c=>c.eventoId===e.id);
+      const badges=(hasProp?'<span title="Proposta gerada" style="font-size:9px;padding:1px 5px;background:rgba(74,100,160,.2);color:#7aa0d4;border:1px solid rgba(74,100,160,.3);border-radius:10px">P</span>':'')+(hasCont?'<span title="Contrato gerado" style="font-size:9px;padding:1px 5px;background:rgba(60,120,60,.2);color:var(--grl);border:1px solid rgba(60,120,60,.3);border-radius:10px">C</span>':'');
+      let card='<div class="kbcard">';
+      card+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px"><div class="kbcn" style="flex:1;padding-right:6px">'+e.nome+'</div><div style="display:flex;gap:3px;flex-shrink:0">'+badges+'</div></div>';
+      card+='<div class="kbcm" style="margin-bottom:3px">'+(e.cliNome||'—')+'</div>';
+      card+='<div class="kbcm" style="display:flex;justify-content:space-between"><span>'+fD(e.data)+'</span><span style="color:'+(parseInt(margem)>=40?'var(--grl)':'var(--aml)')+'">'+fR(e.receita)+'</span></div>';
+      if(cfg&&cfg.primary){
+        card+='<button onclick="'+cfg.primary.fn(e.id)+'" style="width:100%;margin-top:8px;padding:5px 8px;background:rgba(201,168,76,.12);border:1px solid var(--gd);border-radius:4px;color:var(--gl);font-size:10px;cursor:pointer;font-family:\'DM Sans\',sans-serif;font-weight:500">'+cfg.primary.label+'</button>';
+      }
+      if(cfg&&cfg.secondary&&cfg.secondary.length){
+        card+='<div style="margin-top:5px;display:flex;flex-direction:column;gap:3px">';
+        cfg.secondary.forEach(a=>{card+='<button onclick="'+a.fn(e.id)+'" style="width:100%;padding:4px 8px;background:transparent;border:1px solid var(--bd);border-radius:3px;color:var(--tm);font-size:10px;cursor:pointer;font-family:\'DM Sans\',sans-serif;text-align:left">'+a.label+'</button>';});
+        card+='</div>';
+      }
+      card+='</div>';
+      cards+=card;
+    });
+    if(!cards)cards='<div style="font-size:10px;color:var(--td);text-align:center;padding:14px;font-style:italic">— sem eventos —</div>';
+    html+='<div class="kbc kb-'+(SLG[col]||'lead')+'"><div class="kbh" style="display:flex;justify-content:space-between;align-items:center"><span>'+col+'</span><span style="opacity:.4;font-size:10px">'+evs.length+'</span></div><div class="kbb">'+cards+'</div></div>';
+  });
+  board.innerHTML=html;
+}
+
+function irCompras(evId){
+  nav('compras');
+  const el=document.getElementById('cp-filtro');
+  if(el){el.value=evId;}
+  openModal('compra');
+  setTimeout(()=>{const ev=document.getElementById('cp-ev');if(ev)ev.value=evId;},50);
+}
+
+// ═══════════════════════════════════════
+// RENDER: EVENTOS
+// ═══════════════════════════════════════
+function renderEventos(q){
+  q=q||'';
+  const evs=q?S.eventos.filter(e=>e.nome.toLowerCase().includes(q.toLowerCase())||( e.cliNome&&e.cliNome.toLowerCase().includes(q.toLowerCase()))):S.eventos;
+  const tb=document.getElementById('tb-eventos');
+  if(!tb)return;
+  tb.innerHTML=evs.length?evs.map(e=>{
+    const cp=S.compras.filter(c=>c.eventoId===e.id).reduce((s,c)=>s+c.total,0);
+    const l=e.receita-cp;const m=e.receita>0?((l/e.receita)*100).toFixed(0):0;
+    return`<tr>
+      <td class="tdm">${e.nome}</td><td style="font-size:11px">${e.cliNome||'—'}</td><td>${fD(e.data)}</td>
+      <td><select class="status-sel ${FASE_CLS[e.fase]||''}" onchange="mudarFase('${e.id}',this.value)">${FASES.map(f=>`<option value="${f}" ${e.fase===f?'selected':''}>${f}</option>`).join('')}</select></td>
+      <td class="tdg tdmn">${fR(e.receita)}</td>
+      <td class="tdr tdmn">${fR(cp)}</td>
+      <td class="tdmn" style="color:${l>=0?'var(--grl)':'var(--rdl)'}">${fR(l)}</td>
+      <td><span class="badge ${parseInt(m)>=40?'bg2':'ba2'}">${m}%</span></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn bxs bo" onclick="quickActions('${e.id}',event)">…</button>
+        <button class="btn bxs bd-btn" onclick="del('eventos','${e.id}')">✕</button>
+      </td></tr>`;}).join(''):'<tr class="er"><td colspan="9">Nenhum evento.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: DOCUMENTOS
+// ═══════════════════════════════════════
+function renderPropostas(){
+  populateSels();
+  const filtId=document.getElementById('prop-filtro')?.value||'';
+  const list=filtId?S.propostas.filter(p=>p.eventoId===filtId):S.propostas;
+  const tb=document.getElementById('tb-propostas');
+  if(!tb)return;
+  if(!list.length){tb.innerHTML='<tr class="er"><td colspan="8">Nenhuma proposta. Crie via Pipeline ou clique em "+ Nova Proposta".</td></tr>';return;}
+  tb.innerHTML=list.map((p,idx)=>{
+    const ev=S.eventos.find(e=>e.id===p.eventoId);
+    const num=p.num||('PROP-'+(idx+1).toString().padStart(3,'0'));
+    const statusCls={'Enviada':'ba2','Aprovada':'bg2','Recusada':'br2'}[p.status]||'ba2';
+    return`<tr>
+      <td style="font-size:11px;color:var(--td)">${num}</td>
+      <td class="tdm">${p.eventoNome||'—'}</td>
+      <td style="font-size:11px">${p.cliNome||'—'}</td>
+      <td>${fD(p.dataEvento)}</td>
+      <td class="tdo tdmn">${fR(p.val)}</td>
+      <td style="font-size:11px">${fD(p.gerado)}</td>
+      <td>${sb(ev?.fase||'Lead')}</td>
+      <td style="display:flex;gap:4px">
+        <button class="btn bxs bo" onclick="reabrirDoc('proposta','${p.eventoId}')" title="Reimprimir">🖨</button>
+        <button class="btn bxs bgr" onclick="aprovarProposta('${p.id}')" title="Marcar aprovada" style="font-size:10px">✓</button>
+        <button class="btn bxs bd-btn" onclick="del('propostas','${p.id}')">✕</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function renderContratos(){
+  populateSels();
+  const filtId=document.getElementById('cont-filtro')?.value||'';
+  const list=filtId?S.contratos.filter(c=>c.eventoId===filtId):S.contratos;
+  const tb=document.getElementById('tb-contratos');
+  if(!tb)return;
+  if(!list.length){tb.innerHTML='<tr class="er"><td colspan="9">Nenhum contrato. Crie via Pipeline ou clique em "+ Novo Contrato".</td></tr>';return;}
+  tb.innerHTML=list.map((c,idx)=>{
+    const assinado=c.status==='Assinado';
+    const num=c.num||('CONT-'+(idx+1).toString().padStart(3,'0'));
+    return`<tr>
+      <td style="font-size:11px;color:var(--td)">${num}</td>
+      <td class="tdm">${c.eventoNome||'—'}</td>
+      <td style="font-size:11px">${c.cliNome||'—'}</td>
+      <td>${fD(c.dataEvento)}</td>
+      <td class="tdo tdmn">${fR(c.val)}</td>
+      <td class="tdmn">${fR(c.sinal)}</td>
+      <td style="font-size:11px">${c.tipo||'—'}</td>
+      <td><span class="badge ${assinado?'bg2':'ba2'}">${c.status||'Aguardando Assinatura'}</span></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn bxs bo" onclick="reabrirDoc('contrato','${c.eventoId}')" title="Reimprimir">🖨</button>
+        ${!assinado?`<button class="btn bxs bgr" onclick="assinarContrato('${c.id}')" style="font-size:10px">✓ Assinar</button>`:''}
+        <button class="btn bxs bd-btn" onclick="del('contratos','${c.id}')">✕</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function renderPrestacoes(){
+  populateSels();
+  const filtId=document.getElementById('prest-filtro')?.value||'';
+  const list=filtId?S.prestacoes.filter(p=>p.eventoId===filtId):S.prestacoes;
+  const tb=document.getElementById('tb-prestacao');
+  if(!tb)return;
+  if(!list.length){tb.innerHTML='<tr class="er"><td colspan="7">Nenhuma prestação. Gere via Pipeline ou clique em "+ Gerar Prestação".</td></tr>';return;}
+  tb.innerHTML=list.map(p=>{
+    const saldoPos=p.saldo>0;
+    return`<tr>
+      <td class="tdm">${p.eventoNome||'—'}</td>
+      <td style="font-size:11px">${p.cliNome||'—'}</td>
+      <td class="tdr tdmn">${fR(p.totalDesp)}</td>
+      <td class="tdo tdmn">${fR(p.adiant)}</td>
+      <td class="tdmn" style="font-weight:600;color:${saldoPos?'var(--rdl)':'var(--grl)'}">${saldoPos?'▲ ':'▼ '}${fR(Math.abs(p.saldo))}</td>
+      <td style="font-size:11px">${fD(p.gerado)}</td>
+      <td style="display:flex;gap:4px">
+        <button class="btn bxs bo" onclick="reabrirDoc('prestacao','${p.eventoId}')" title="Reimprimir">🖨</button>
+        <button class="btn bxs bd-btn" onclick="del('prestacoes','${p.id}')">✕</button>
+      </td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// RENDER: AGENDA
+// ═══════════════════════════════════════
+function renderAgenda(){
+  const body=document.getElementById('agenda-body');
+  if(!body)return;
+  let html='';
+  S.eventos.filter(e=>e.fase!=='Cancelado').forEach(ev=>{
+    const ts=S.tarefas.filter(t=>t.eventoId===ev.id);
+    const done=ts.filter(t=>t.done).length;
+    const pct=ts.length?Math.round(done/ts.length*100):0;
+    html+='<div style="margin-bottom:22px">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+    html+='<div style="display:flex;align-items:center;gap:12px">';
+    html+='<span style="font-family:\'Cormorant Garamond\',serif;font-size:19px;color:var(--gold)">'+ev.nome+'</span>';
+    html+='<span style="font-size:10px;color:var(--td)">'+fD(ev.data)+'</span>';
+    html+=sb(ev.fase);
+    if(ts.length)html+='<span style="font-size:10px;color:var(--td)">'+done+'/'+ts.length+'</span>';
+    html+='</div>';
+    html+='<button class="btn bxs bo" onclick="openModal(\'tarefa\');setTimeout(()=>{const el=document.getElementById(\'ta-ev\');if(el)el.value=\''+ev.id+'\';},50)">+ Tarefa</button>';
+    html+='</div>';
+    if(ts.length)html+='<div class="prog" style="width:180px;margin-bottom:10px"><div class="pfill" style="width:'+pct+'%"></div></div>';
+    if(ts.length){
+      html+='<div class="cl">';
+      ts.forEach(t=>{
+        html+='<div class="ci '+(t.done?'done':'')+'">';
+        html+='<input type="checkbox" '+(t.done?'checked':'')+' onchange="toggleTask(\''+t.id+'\')">';
+        html+='<span class="cin">'+t.nome+(t.auto?'<span style="font-size:9px;color:var(--gd);margin-left:6px">auto</span>':'')+'</span>';
+        html+='<span class="cim">'+t.cat+'</span>';
+        if(t.prazo)html+='<span class="cim" style="'+(isV(t.prazo)&&!t.done?'color:var(--rdl)':'')+'">'+fD(t.prazo)+'</span>';
+        html+='<span class="badge '+(pColors[t.prio]||'ba2')+'" style="font-size:9px">'+t.prio+'</span>';
+        html+='<button class="bgh bxs" onclick="del(\'tarefas\',\''+t.id+'\',true)">✕</button>';
+        html+='</div>';
+      });
+      html+='</div>';
+    } else {
+      html+='<div style="font-size:12px;color:var(--td)">Nenhuma tarefa.</div>';
+    }
+    html+='</div>';
+  });
+  const gerais=S.tarefas.filter(t=>!t.eventoId);
+  if(gerais.length){
+    html+='<div><div style="font-size:12px;font-weight:500;color:var(--tm);margin-bottom:10px">Tarefas Gerais</div><div class="cl">';
+    gerais.forEach(t=>{
+      html+='<div class="ci '+(t.done?'done':'')+'">';
+      html+='<input type="checkbox" '+(t.done?'checked':'')+' onchange="toggleTask(\''+t.id+'\')">';
+      html+='<span class="cin">'+t.nome+'</span><span class="cim">'+t.cat+'</span>';
+      html+='<button class="bgh bxs" onclick="del(\'tarefas\',\''+t.id+'\',true)">✕</button>';
+      html+='</div>';
+    });
+    html+='</div></div>';
+  }
+  body.innerHTML=html||'<div style="color:var(--td);font-size:12px;text-align:center;padding:40px">Nenhum evento ou tarefa.</div>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: COMPRAS
+// ═══════════════════════════════════════
+function renderCompras(){
+  const filt=document.getElementById('cp-filtro')?.value||'';
+  const list=filt?S.compras.filter(c=>c.eventoId===filt):S.compras;
+  const tot=list.reduce((s,c)=>s+c.total,0);
+  const pend=list.filter(c=>c.status==='Pendente').reduce((s,c)=>s+c.total,0);
+  const ent=list.filter(c=>c.status==='Entregue').reduce((s,c)=>s+c.total,0);
+  const kpi=document.getElementById('compras-kpis');
+  if(kpi)kpi.innerHTML=`<div class="kpi"><div class="kl">Total em Compras</div><div class="kv gold">${fR(tot)}</div></div><div class="kpi"><div class="kl">Pendente</div><div class="kv red">${fR(pend)}</div></div><div class="kpi"><div class="kl">Entregue</div><div class="kv green">${fR(ent)}</div></div>`;
+  const STATUS_CP=['Pendente','Comprado','Em Trânsito','Entregue','Cancelado'];
+  const STATUS_CLS={Pendente:'ba2',Comprado:'bb2','Em Trânsito':'bt2',Entregue:'bg2',Cancelado:'br2'};
+  const tb=document.getElementById('tb-compras');
+  if(tb)tb.innerHTML=list.length?list.map(c=>`<tr>
+    <td class="tdm">${c.nome}</td><td style="font-size:11px">${c.eventoNome||'Geral'}</td>
+    <td style="font-size:11px">${c.forn||'—'}</td><td style="font-size:11px">${c.cat}</td>
+    <td>${c.qtd} ${c.un}</td><td>${fR(c.vunit)}</td><td class="tdo tdmn">${fR(c.total)}</td>
+    <td><select class="status-sel ${STATUS_CLS[c.status]||''}" onchange="mudarStatusCompra('${c.id}',this.value)">${STATUS_CP.map(s=>`<option value="${s}" ${c.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td><button class="btn bxs bd-btn" onclick="del('compras','${c.id}')">✕</button></td>
+  </tr>`).join(''):'<tr class="er"><td colspan="9">Nenhuma compra.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: ESTOQUE
+// ═══════════════════════════════════════
+function renderEstoque(q){
+  q=q||'';
+  const todos=q?S.estoque.filter(i=>i.nome.toLowerCase().includes(q.toLowerCase())):S.estoque;
+  const acervo=todos.filter(i=>i.tipo==='acervo');
+  const insumos=todos.filter(i=>i.tipo!=='acervo');
+  const valTot=insumos.reduce((s,i)=>s+i.qtd*(i.custo||0),0);
+  const baixo=insumos.filter(i=>i.qtd<=i.min&&i.min>0).length;
+  const kpi=document.getElementById('estoque-kpis');
+  if(kpi)kpi.innerHTML=`<div class="kpi"><div class="kl">Total de Itens</div><div class="kv">${todos.length}</div></div><div class="kpi"><div class="kl">Valor em Estoque</div><div class="kv gold">${fR(valTot)}</div></div><div class="kpi"><div class="kl">Estoque Baixo</div><div class="kv red">${baixo}</div></div><div class="kpi"><div class="kl">Itens do Acervo</div><div class="kv teal">${acervo.length}</div></div>`;
+  const rowFn=i=>{
+    const sit=i.tipo==='acervo'?'Acervo':i.qtd===0?'Zerado':i.qtd<=i.min?'Baixo':'Ok';
+    const sitCls=sit==='Ok'||sit==='Acervo'?'bg2':sit==='Baixo'?'ba2':'br2';
+    const pct=i.min>0?Math.min(100,Math.round(i.qtd/i.min*100)):100;
+    const bc=sit==='Ok'?'sok':sit==='Baixo'?'slow':'sout';
+    return`<tr>
+      <td class="tdm">${i.nome}</td>
+      <td><span class="badge ${i.tipo==='acervo'?'bt2':'bb2'}">${i.tipo==='acervo'?'Acervo':'Insumo'}</span></td>
+      <td style="font-size:11px">${i.cat||'—'}</td>
+      <td><strong style="color:${sit==='Ok'||sit==='Acervo'?'var(--grl)':sit==='Baixo'?'var(--aml)':'var(--rdl)'}">${i.qtd}</strong> ${i.un}${i.tipo!=='acervo'?`<div class="sbar"><div class="sfill ${bc}" style="width:${pct}%"></div></div>`:''}</td>
+      <td>${i.min} ${i.un}</td>
+      <td><span class="badge ${sitCls}">${sit}</span></td>
+      <td>${i.tipo==='acervo'?fR(i.locacao||0)+'/evento':fR(i.custo||0)}</td>
+      <td class="tdo">${fR(i.qtd*(i.tipo==='acervo'?(i.locacao||0):(i.custo||0)))}</td>
+      <td style="display:flex;gap:4px"><button class="btn bxs bo" onclick="openModal('ajuste');setTimeout(()=>{const el=document.getElementById('aj-item');if(el)el.value='${i.id}';},50)">Ajuste</button><button class="btn bxs bd-btn" onclick="del('estoque','${i.id}')">✕</button></td></tr>`;
+  };
+  const tbTodos=document.getElementById('tb-estoque-todos');
+  if(tbTodos)tbTodos.innerHTML=todos.length?todos.map(rowFn).join(''):'<tr class="er"><td colspan="9">Nenhum item.</td></tr>';
+  const tbAcervo=document.getElementById('tb-estoque-acervo');
+  if(tbAcervo)tbAcervo.innerHTML=acervo.length?acervo.map(i=>`<tr><td class="tdm">${i.nome}</td><td style="font-size:11px">${i.cat||'—'}</td><td>${i.qtd} ${i.un}</td><td class="tdo tdmn">${fR(i.locacao||0)}/evento</td><td>—</td><td><button class="btn bxs bd-btn" onclick="del('estoque','${i.id}')">✕</button></td></tr>`).join(''):'<tr class="er"><td colspan="6">Nenhum item no acervo.</td></tr>';
+  const tbInsumos=document.getElementById('tb-estoque-insumos');
+  if(tbInsumos)tbInsumos.innerHTML=insumos.length?insumos.map(i=>{const sit=i.qtd===0?'Zerado':i.qtd<=i.min?'Baixo':'Ok';return`<tr><td class="tdm">${i.nome}</td><td style="font-size:11px">${i.cat||'—'}</td><td>${i.qtd} ${i.un}</td><td>${i.min} ${i.un}</td><td><span class="badge ${sit==='Ok'?'bg2':sit==='Baixo'?'ba2':'br2'}">${sit}</span></td><td>${fR(i.custo||0)}</td><td><button class="btn bxs bd-btn" onclick="del('estoque','${i.id}')">✕</button></td></tr>`;}).join(''):'<tr class="er"><td colspan="7">Nenhum insumo.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: FINANCEIRO
+// ═══════════════════════════════════════
+function renderFinanceiro(){
+  const rec=S.contas.filter(c=>c.tipo==='receber');
+  const pag=S.contas.filter(c=>c.tipo==='pagar');
+  const tRec=rec.filter(c=>c.status!=='Recebido').reduce((s,c)=>s+c.valor,0);
+  const tPag=pag.filter(c=>c.status!=='Pago').reduce((s,c)=>s+c.valor,0);
+  const venc=S.contas.filter(c=>isV(c.venc)&&!['Pago','Recebido'].includes(c.status)).reduce((s,c)=>s+c.valor,0);
+  const kpi=document.getElementById('fin-kpis');
+  if(kpi)kpi.innerHTML=`<div class="kpi"><div class="kl">A Receber</div><div class="kv gold">${fR(tRec)}</div></div><div class="kpi"><div class="kl">A Pagar</div><div class="kv red">${fR(tPag)}</div></div><div class="kpi"><div class="kl">Saldo Previsto</div><div class="kv green">${fR(tRec-tPag)}</div></div><div class="kpi"><div class="kl">Vencido</div><div class="kv red">${fR(venc)}</div></div>`;
+  const rowC=(c,tipo)=>`<tr>
+    <td class="tdm">${c.desc}</td><td style="font-size:11px">${c.eventoNome||'Geral'}</td>
+    <td style="${isV(c.venc)&&!['Pago','Recebido'].includes(c.status)?'color:var(--rdl)':''}">${fD(c.venc)}</td>
+    <td class="tdmn ${tipo==='receber'?'tdg':'tdr'}">${fR(c.valor)}</td>
+    <td><span class="badge ${c.status==='Pago'||c.status==='Recebido'?'bg2':'ba2'}">${c.status}</span></td>
+    <td style="display:flex;gap:4px">
+      <button class="btn bxs bgr" onclick="baixarConta('${c.id}')">${tipo==='pagar'?(c.status==='Pago'?'↩':'✓'):(c.status==='Recebido'?'↩':'✓')}</button>
+      <button class="btn bxs bd-btn" onclick="del('contas','${c.id}')">✕</button>
+    </td></tr>`;
+  const tbRec=document.getElementById('tb-receber');
+  if(tbRec)tbRec.innerHTML=rec.length?rec.map(c=>rowC(c,'receber')).join(''):'<tr class="er"><td colspan="6">Nenhuma conta a receber.</td></tr>';
+  const tbPag=document.getElementById('tb-pagar');
+  if(tbPag)tbPag.innerHTML=pag.length?pag.map(c=>rowC(c,'pagar')).join(''):'<tr class="er"><td colspan="6">Nenhuma conta a pagar.</td></tr>';
+  const tbMar=document.getElementById('tb-margem');
+  if(tbMar)tbMar.innerHTML=S.eventos.length?S.eventos.map(e=>{
+    const cp=S.compras.filter(c=>c.eventoId===e.id).reduce((s,c)=>s+c.total,0);
+    const l=e.receita-cp;const m=e.receita>0?((l/e.receita)*100).toFixed(1):0;
+    return`<tr><td class="tdm">${e.nome}</td><td class="tdg tdmn">${fR(e.receita)}</td><td class="tdr tdmn">—</td><td class="tdr tdmn">${fR(cp)}</td><td class="tdmn" style="color:${l>=0?'var(--grl)':'var(--rdl)'}">${fR(l)}</td><td><span class="badge ${parseFloat(m)>=40?'bg2':parseFloat(m)>=20?'ba2':'br2'}">${m}%</span></td></tr>`;}).join(''):'<tr class="er"><td colspan="6">Nenhum evento.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: CONCILIAÇÃO
+// ═══════════════════════════════════════
+function renderConc(){
+  const ent=S.lancamentos.filter(l=>l.tipo==='Entrada').reduce((s,l)=>s+l.valor,0);
+  const sai=S.lancamentos.filter(l=>l.tipo==='Saída').reduce((s,l)=>s+l.valor,0);
+  const kpi=document.getElementById('conc-kpis');
+  if(kpi)kpi.innerHTML=`<div class="kpi"><div class="kl">Entradas</div><div class="kv gold">${fR(ent)}</div></div><div class="kpi"><div class="kl">Saídas</div><div class="kv red">${fR(sai)}</div></div><div class="kpi"><div class="kl">Saldo</div><div class="kv green">${fR(ent-sai)}</div></div>`;
+  const sorted=[...S.lancamentos].sort((a,b)=>new Date(b.data)-new Date(a.data));
+  const tb=document.getElementById('tb-lanc');
+  if(tb)tb.innerHTML=sorted.length?sorted.map(l=>`<tr>
+    <td>${fD(l.data)}</td><td class="tdm">${l.desc}</td><td style="font-size:11px">${l.cat}</td>
+    <td style="font-size:11px">${l.eventoNome||'—'}</td>
+    <td><span class="badge ${l.tipo==='Entrada'?'bg2':'br2'}">${l.tipo}</span></td>
+    <td class="tdmn ${l.tipo==='Entrada'?'tdg':'tdr'}">${fR(l.valor)}</td>
+    <td><span class="badge ${l.conciliado?'bg2':'ba2'}">${l.conciliado?'Conciliado':'Pendente'}</span></td>
+    <td style="display:flex;gap:4px">
+      <button class="btn bxs bo" onclick="toggleConc('${l.id}')">${l.conciliado?'↩':'✓'}</button>
+      <button class="btn bxs bd-btn" onclick="del('lancamentos','${l.id}')">✕</button>
+    </td></tr>`).join(''):'<tr class="er"><td colspan="8">Nenhum lançamento.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// RENDER: CLIENTES
+// ═══════════════════════════════════════
+function renderClientes(){
+  const tb=document.getElementById('tb-clientes');
+  if(!tb)return;
+  tb.innerHTML=S.clientes.length?S.clientes.map(c=>{
+    const evs=S.eventos.filter(e=>e.cliId===c.id);
+    const tot=evs.reduce((s,e)=>s+e.receita,0);
+    const ult=[...evs].sort((a,b)=>new Date(b.data)-new Date(a.data))[0];
+    return`<tr>
+      <td class="tdm">${c.nome}</td>
+      <td><a href="https://wa.me/55${(c.tel||'').replace(/\D/g,'')}" target="_blank" style="color:var(--grl)">${c.tel||'—'}</a></td>
+      <td style="font-size:11px">${c.email||'—'}</td>
+      <td>${evs.length}</td><td class="tdo tdmn">${fR(tot)}</td>
+      <td style="font-size:11px">${ult?fD(ult.data):'—'}</td>
+      <td><button class="btn bxs bd-btn" onclick="del('clientes','${c.id}')">✕</button></td></tr>`;}).join(''):'<tr class="er"><td colspan="7">Nenhum cliente.</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// QUICK ACTIONS MENU
+// ═══════════════════════════════════════
+let _qaMenu=null;
+function quickActions(evId,event){
+  if(_qaMenu){_qaMenu.remove();_qaMenu=null;return;}
+  const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+  const btn=event.currentTarget||event.target;
+  const rect=btn.getBoundingClientRect();
+  const menu=document.createElement('div');
+  menu.id='qa-menu';
+  menu.style.cssText='position:fixed;top:'+(rect.bottom+4)+'px;right:'+(window.innerWidth-rect.right)+'px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:999;min-width:200px;overflow:hidden';
+  const actions=[
+    {icon:'◑',label:'Proposta',fn:()=>abrirDocPanel('proposta',evId)},
+    {icon:'◐',label:'Contrato',fn:()=>abrirDocPanel('contrato',evId)},
+    {icon:'◉',label:'Prestação de Contas',fn:()=>abrirDocPanel('prestacao',evId)},
+    {icon:'▣',label:'Nova Compra',fn:()=>{openModal('compra');setTimeout(()=>{const el=document.getElementById('cp-ev');if(el)el.value=evId;},50);}},
+    {icon:'◫',label:'Nova Tarefa',fn:()=>{openModal('tarefa');setTimeout(()=>{const el=document.getElementById('ta-ev');if(el)el.value=evId;},50);}},
+  ];
+  actions.forEach(a=>{
+    const item=document.createElement('div');
+    item.style.cssText='padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--tm);transition:all .1s';
+    item.innerHTML='<span style="color:var(--gold);font-size:13px">'+a.icon+'</span>'+a.label;
+    item.onmouseenter=()=>item.style.background='var(--sf2)';
+    item.onmouseleave=()=>item.style.background='';
+    item.onclick=(e)=>{e.stopPropagation();closeQA();a.fn();};
+    menu.appendChild(item);
+  });
+  document.body.appendChild(menu);
+  _qaMenu=menu;
+  setTimeout(()=>document.addEventListener('click',closeQA,{once:true}),0);
+}
+function closeQA(){if(_qaMenu){_qaMenu.remove();_qaMenu=null;}}
+
+// ═══════════════════════════════════════
+// AI ASSISTANT
+// ═══════════════════════════════════════
+function toggleAI(){const p=document.getElementById('ai-panel');if(p)p.classList.toggle('open');}
+function askAI(msg){const inp=document.getElementById('ai-input');if(inp)inp.value=msg;sendAI();}
+let aiH=[];
+
+function buildCtx(){
+  const rec=S.eventos.reduce((s,e)=>s+e.receita,0);
+  const cp=S.compras.reduce((s,c)=>s+c.total,0);
+  const venc=S.contas.filter(c=>isV(c.venc)&&!['Pago','Recebido'].includes(c.status));
+  return 'Você é o assistente de gestão da ARden Designer de Celebrações, empresa de decoração de ambientes e balões, São Pedro da Aldeia/RJ. CNPJ: 65.690.774/0001-37.\n'+
+    'DADOS:\n- Eventos: '+S.eventos.length+' | Receita: '+fR(rec)+' | Compras: '+fR(cp)+' | Lucro: '+fR(rec-cp)+'\n'+
+    '- Propostas: '+S.propostas.length+' | Contratos: '+S.contratos.length+' | Clientes: '+S.clientes.length+'\n'+
+    (S.eventos.length?'- Ativos: '+S.eventos.filter(e=>!['Concluído','Cancelado'].includes(e.fase)).map(e=>e.nome+'('+e.fase+')').join(', ')+'\n':'')+
+    'Responda em português, de forma objetiva e prática para uma pequena empresária.';
+}
+
+function addAI(text,cls){
+  const id='m'+uid();
+  const div=document.createElement('div');
+  div.className='aimsg '+cls;div.id=id;div.textContent=text;
+  const msgs=document.getElementById('ai-msgs');
+  if(msgs){msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+  return id;
+}
+
+async function sendAI(){
+  const inp=document.getElementById('ai-input');
+  if(!inp)return;
+  const msg=inp.value.trim();if(!msg)return;
+  inp.value='';
+  addAI(msg,'user');
+  aiH.push({role:'user',content:msg});
+  const lid=addAI('Analisando...','bot loading');
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildCtx(),messages:aiH})
+    });
+    const d=await r.json();
+    const reply=(d.content&&d.content[0]&&d.content[0].text)||'Não consegui processar.';
+    const lidEl=document.getElementById(lid);
+    if(lidEl)lidEl.remove();
+    addAI(reply,'bot');
+    aiH.push({role:'assistant',content:reply});
+    if(aiH.length>20)aiH=aiH.slice(-16);
+  }catch(e){
+    const lidEl=document.getElementById(lid);
+    if(lidEl)lidEl.remove();
+    addAI('Erro de conexão. Verifique sua internet.','bot');
+  }
+}
+
+// ═══════════════════════════════════════
+// DOCUMENT PANEL
+// ═══════════════════════════════════════
+const _$=id=>document.getElementById(id);
+const _v=id=>(_$(id)&&_$(id).value)||'';
+const _n=id=>parseFloat((_$(id)&&_$(id).value)||0)||0;
+const fRd=x=>'R$ '+Number(x||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fDd=s=>{if(!s)return'—';try{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;}catch(e){return s;}};
+const todayStr=()=>new Date().toISOString().split('T')[0];
+const dpUid=()=>Math.random().toString(36).substr(2,8);
+
+let dpType='';
+let dpPItens=[];
+let dpCItens=[];
+let dpPCCats=[];
+let dpPCAc=[];
+
+const CATS_LIST=['Balões','Orbs / Bubbles','Tecidos','Consumíveis e Acabamento','Painel — Letras e Pintura','Flores e Arranjos','Iluminação','Estruturas e Suportes','Outros'];
+const COMPROV_LIST=['Cupom Fiscal NFC-e','Pedido Shopee','Pedido Mercado Livre','Nota Fiscal','Recibo','Sem comprovante'];
+const ACERVO_DEFAULT=[
+  {nome:'Aluguel Shime — acervo ARDEN',val:300},
+  {nome:'Aluguel Painel Grande — acervo ARDEN',val:120},
+  {nome:'Aluguel Painel Menor — unidade 1',val:100},
+  {nome:'Aluguel Painel Menor — unidade 2',val:100},
+  {nome:'Mangueiras de LED — acervo ARDEN',val:50},
+];
+
+function dpEvOpts(){
+  return '<option value="">— Selecionar evento —</option>'+S.eventos.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
+}
+
+function fecharDocPanel(){
+  const p=_$('doc-panel');if(p)p.classList.remove('open');
+}
+
+function abrirDocPanel(type,preloadEvId){
+  preloadEvId=preloadEvId||'';
+  dpType=type;dpPItens=[];dpCItens=[];dpPCCats=[];dpPCAc=[];
+  const titles={proposta:'Nova Proposta',contrato:'Novo Contrato',prestacao:'Prestação de Contas',aditivo:'Aditivo de Contrato'};
+  const titleEl=_$('dp-title');if(titleEl)titleEl.textContent=titles[type]||type;
+  const emptyEl=_$('dp-empty');if(emptyEl)emptyEl.style.display='flex';
+  const outEl=_$('dp-out');if(outEl){outEl.style.display='none';outEl.innerHTML='';}
+  const forms={proposta:buildPropostaForm,contrato:buildContratoForm,prestacao:buildPrestacaoForm,aditivo:buildContratoForm};
+  const scrollEl=_$('dp-scroll');
+  if(scrollEl){
+    scrollEl.innerHTML=(forms[type]||buildPropostaForm)();
+    scrollEl.scrollTop=0;
+  }
+  const panelEl=_$('doc-panel');if(panelEl)panelEl.classList.add('open');
+  // Set today on empty date fields
+  ['dp-p-dt','dp-c-dt','dp-pc-emiss'].forEach(id=>{const el=_$(id);if(el&&!el.value)el.value=todayStr();});
+  // Auto-number
+  const year=new Date().getFullYear();
+  const pad=n=>String(n).padStart(3,'0');
+  const numMap={proposta:{el:'dp-p-num',pre:'PROP',cnt:S.propostas.length+1},contrato:{el:'dp-c-num',pre:'CONT',cnt:S.contratos.length+1},prestacao:{el:'dp-pc-num',pre:'PC',cnt:S.prestacoes.length+1},aditivo:{el:'dp-c-num',pre:'ADIT',cnt:S.contratos.length+1}};
+  const nm=numMap[type];
+  if(nm){const el=_$(nm.el);if(el&&!el.value)el.value=nm.pre+'-'+pad(nm.cnt)+'/'+year;}
+  // Preload event
+  if(preloadEvId){
+    const evSelMap={proposta:'dp-p-ev',contrato:'dp-c-ev',prestacao:'dp-pc-ev'};
+    const selEl=_$(evSelMap[type]);if(selEl)selEl.value=preloadEvId;
+    dpOnEvChange(type);
+  }
+  if(type==='aditivo'){
+    const extraE=_$('dp-c-extra');
+    if(extraE&&!extraE.value)extraE.value='Este documento constitui ADITIVO ao contrato original.';
+    dpRenderContrato();
+  }
+}
+
+function reabrirDoc(tipo,evId){
+  abrirDocPanel(tipo,evId||'');
+}
+
+let _dpThrottle=null;
+function dpOnChange(){
+  if(_dpThrottle)clearTimeout(_dpThrottle);
+  _dpThrottle=setTimeout(()=>{
+    if(dpType==='proposta')dpRenderProposta();
+    else if(dpType==='contrato')dpRenderContrato();
+    else if(dpType==='prestacao')dpRenderPrestacao();
+  },200);
+}
+
+function dpOnEvChange(type){
+  const t=type||dpType;
+  if(t==='proposta'){
+    const evId=_v('dp-p-ev');if(!evId)return;
+    const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+    const valEl=_$('dp-p-val');if(valEl&&!valEl.value)valEl.value=ev.receita||'';
+    const nEl=_$('dp-p-ev-nome');if(nEl)nEl.value=ev.nome;
+    const dtEl=_$('dp-p-ev-dt');if(dtEl)dtEl.value=ev.data||'';
+    const lEl=_$('dp-p-local');if(lEl&&!lEl.value)lEl.value=ev.local||'';
+    const cli=ev.cliId?S.clientes.find(c=>c.id===ev.cliId):null;
+    const cliNomeEl=_$('dp-p-cli');
+    if(cli){
+      if(cliNomeEl)cliNomeEl.value=cli.nome;
+      const docEl=_$('dp-p-doc');if(docEl)docEl.value=cli.doc||'';
+      const telEl=_$('dp-p-tel');if(telEl)telEl.value=cli.tel||'';
+    } else if(ev.cliNome&&cliNomeEl&&!cliNomeEl.value)cliNomeEl.value=ev.cliNome;
+    dpRenderProposta();
+  } else if(t==='contrato'){
+    const evId=_v('dp-c-ev');if(!evId)return;
+    const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+    const totEl=_$('dp-c-total');if(totEl&&!totEl.value)totEl.value=ev.receita||'';
+    const nEl=_$('dp-c-ev-nome');if(nEl)nEl.value=ev.nome;
+    const dtEl=_$('dp-c-ev-dt');if(dtEl)dtEl.value=ev.data||'';
+    const lEl=_$('dp-c-local');if(lEl&&!lEl.value)lEl.value=ev.local||'';
+    const mEl=_$('dp-c-mont');if(mEl&&!mEl.value)mEl.value=ev.hora||'';
+    const cli=ev.cliId?S.clientes.find(c=>c.id===ev.cliId):null;
+    const cliNomeEl=_$('dp-c-cli');
+    if(cli){
+      if(cliNomeEl)cliNomeEl.value=cli.nome;
+      const docEl=_$('dp-c-doc');if(docEl)docEl.value=cli.doc||'';
+      const telEl=_$('dp-c-tel');if(telEl)telEl.value=cli.tel||'';
+      const endEl=_$('dp-c-end');if(endEl&&!endEl.value)endEl.value=cli.end||'';
+    } else if(ev.cliNome&&cliNomeEl&&!cliNomeEl.value)cliNomeEl.value=ev.cliNome;
+    dpRenderContrato();
+  } else if(t==='prestacao'){
+    const evId=_v('dp-pc-ev');if(!evId)return;
+    const ev=S.eventos.find(e=>e.id===evId);if(!ev)return;
+    const nEl=_$('dp-pc-ev-nome');if(nEl)nEl.value=ev.nome;
+    const dtEl=_$('dp-pc-ev-dt');if(dtEl)dtEl.value=ev.data||'';
+    const cli=ev.cliId?S.clientes.find(c=>c.id===ev.cliId):null;
+    const cliEl=_$('dp-pc-cli');
+    if(cli){if(cliEl&&!cliEl.value)cliEl.value=cli.nome;}
+    else if(ev.cliNome&&cliEl&&!cliEl.value)cliEl.value=ev.cliNome;
+    // Auto-load compras
+    const comprasEv=S.compras.filter(c=>c.eventoId===evId&&c.status!=='Cancelado');
+    if(comprasEv.length&&!dpPCCats.length){
+      const groups={};
+      comprasEv.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
+      Object.entries(groups).forEach(([cat,items])=>{
+        dpPCCats.push({id:dpUid(),nome:cat,itens:items.map(i=>({id:dpUid(),desc:i.nome,forn:i.forn||'',comprov:i.comprov||COMPROV_LIST[0],val:i.total}))});
+      });
+      renderDpCats();
+    }
+    dpRenderPrestacao();
+  }
+}
+
+// ── Form builders ──
+function buildPropostaForm(){
+  return`<div class="dsec">Identificação</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nº da Proposta</label><input id="dp-p-num" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Data</label><input id="dp-p-dt" type="date" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Válida até</label><input id="dp-p-val-dt" type="date" oninput="dpOnChange()"></div>
+</div>
+<div class="dsec">Vincular Evento</div>
+<div class="dfi"><label>Evento do Sistema</label><select id="dp-p-ev" onchange="dpOnEvChange('proposta')">${dpEvOpts()}</select></div>
+<div class="dsec">Cliente</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nome / Empresa</label><input id="dp-p-cli" placeholder="Nome completo" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>CPF / CNPJ</label><input id="dp-p-doc" placeholder="000.000.000-00" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>WhatsApp</label><input id="dp-p-tel" oninput="dpOnChange()"></div>
+  <div class="dfi dgf"><label>Endereço</label><input id="dp-p-end" oninput="dpOnChange()"></div>
+</div>
+<div class="dsec">Evento</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nome do Evento</label><input id="dp-p-ev-nome" placeholder="Ex: Decoração Formatura UMADESPA" oninput="dpOnChange()"></div>
+  <div class="dfi dgf"><label>Tipo de Serviço</label><select id="dp-p-tipo" onchange="dpOnChange()"><option>Decoração Completa (Ambiente + Balões)</option><option>Decoração de Ambiente</option><option>Design e Decoração com Balões</option><option>Decoração Igreja</option><option>Assessoria de Decoração</option><option>Festa Infantil</option><option>Casamento</option></select></div>
+  <div class="dfi"><label>Data do Evento</label><input id="dp-p-ev-dt" type="date" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Horário</label><input id="dp-p-hr" type="time" oninput="dpOnChange()"></div>
+  <div class="dfi dgf"><label>Local</label><input id="dp-p-local" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Tema</label><input id="dp-p-tema" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Paleta de Cores</label><input id="dp-p-cores" oninput="dpOnChange()"></div>
+</div>
+<div class="dsec">Itens & Serviços</div>
+<div id="dp-p-itens"></div>
+<button class="dadd" onclick="dpAddPI()">+ Adicionar Item / Serviço</button>
+<div class="dsec">Pagamento</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Valor Total (R$)</label><input id="dp-p-val" type="number" placeholder="0,00" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Sinal / Entrada (R$)</label><input id="dp-p-sinal" type="number" placeholder="0,00" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Prazo do Sinal</label><input id="dp-p-prazo-s" placeholder="Ex: até 3 dias úteis" oninput="dpOnChange()"></div>
+  <div class="dfi dgf"><label>Pagamento do Saldo</label><select id="dp-p-forma" onchange="dpOnChange()"><option>Pix — no dia do evento</option><option>Pix — 1 dia antes</option><option>Dinheiro — no dia do evento</option><option>A combinar</option></select></div>
+  <div class="dfi"><label>Prazo de Execução</label><input id="dp-p-exec" placeholder="Ex: 6h de montagem" oninput="dpOnChange()"></div>
+  <div class="dfi"><label>Desmontagem</label><input id="dp-p-desmont" placeholder="Ex: Até 23h" oninput="dpOnChange()"></div>
+</div>
+<div class="dsec">Obs</div>
+<div class="dfi"><label>O que NÃO está incluso</label><textarea id="dp-p-nao" oninput="dpOnChange()"></textarea></div>
+<div class="dfi"><label>Condições Especiais</label><textarea id="dp-p-cond" oninput="dpOnChange()"></textarea></div>`;
+}
+
+function buildContratoForm(){
+  return`<div class="dsec">Identificação</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nº do Contrato</label><input id="dp-c-num" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>Data de Assinatura</label><input id="dp-c-dt" type="date" oninput="dpRenderContrato()"></div>
+</div>
+<div class="dsec">Vincular Evento</div>
+<div class="dfi"><label>Evento do Sistema</label><select id="dp-c-ev" onchange="dpOnEvChange('contrato')">${dpEvOpts()}</select></div>
+<div class="dsec">Contratante</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nome Completo</label><input id="dp-c-cli" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>CPF / CNPJ</label><input id="dp-c-doc" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>RG</label><input id="dp-c-rg" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>WhatsApp</label><input id="dp-c-tel" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>E-mail</label><input id="dp-c-email" oninput="dpRenderContrato()"></div>
+  <div class="dfi dgf"><label>Endereço</label><input id="dp-c-end" oninput="dpRenderContrato()"></div>
+</div>
+<div class="dsec">Objeto</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nome do Evento</label><input id="dp-c-ev-nome" oninput="dpRenderContrato()"></div>
+  <div class="dfi dgf"><label>Tipo de Serviço</label><select id="dp-c-tipo" onchange="dpRenderContrato()"><option>Decoração Completa (Ambiente + Balões)</option><option>Decoração de Ambiente</option><option>Design e Decoração com Balões</option><option>Decoração Igreja</option><option>Assessoria de Decoração</option></select></div>
+  <div class="dfi"><label>Data do Evento</label><input id="dp-c-ev-dt" type="date" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>Início da Montagem</label><input id="dp-c-mont" type="time" oninput="dpRenderContrato()"></div>
+  <div class="dfi dgf"><label>Local do Evento</label><input id="dp-c-local" oninput="dpRenderContrato()"></div>
+  <div class="dfi dgf"><label>Desmontagem</label><input id="dp-c-desmont" placeholder="Ex: Até 23h do mesmo dia" oninput="dpRenderContrato()"></div>
+</div>
+<div class="dsec">Itens Contratados</div>
+<div id="dp-c-itens"></div>
+<button class="dadd" onclick="dpAddCI()">+ Adicionar Item Contratado</button>
+<div class="dsec">Valores</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Valor Total (R$)</label><input id="dp-c-total" type="number" placeholder="0,00" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>Sinal / Entrada (R$)</label><input id="dp-c-sinal" type="number" placeholder="0,00" oninput="dpRenderContrato()"></div>
+  <div class="dfi"><label>Prazo do Sinal</label><input id="dp-c-prazo-s" oninput="dpRenderContrato()"></div>
+  <div class="dfi dgf"><label>Pagamento do Saldo</label><select id="dp-c-forma" onchange="dpRenderContrato()"><option>Pix — no dia do evento</option><option>Dinheiro — no dia do evento</option><option>Transferência bancária</option><option>A combinar</option></select></div>
+</div>
+<div class="dsec">Cláusulas Adicionais</div>
+<div class="dfi"><label>Condições Especiais (opcional)</label><textarea id="dp-c-extra" oninput="dpRenderContrato()"></textarea></div>`;
+}
+
+function buildPrestacaoForm(){
+  return`<div class="dsec">Identificação</div>
+<div class="dg2">
+  <div class="dfi dgf"><label>Nº do Documento</label><input id="dp-pc-num" oninput="dpRenderPrestacao()"></div>
+  <div class="dfi dgf"><label>Cliente</label><input id="dp-pc-cli" oninput="dpRenderPrestacao()"></div>
+  <div class="dfi dgf"><label>Evento</label><input id="dp-pc-ev-nome" oninput="dpRenderPrestacao()"></div>
+  <div class="dfi"><label>Data do Evento</label><input id="dp-pc-ev-dt" type="date" oninput="dpRenderPrestacao()"></div>
+  <div class="dfi"><label>Data de Emissão</label><input id="dp-pc-emiss" type="date" oninput="dpRenderPrestacao()"></div>
+  <div class="dfi dgf"><label>Adiantamento Recebido (R$)</label><input id="dp-pc-adiant" type="number" placeholder="0,00" oninput="dpRenderPrestacao()"></div>
+</div>
+<div class="dsec">Vincular Evento (carrega compras)</div>
+<div class="dfi"><label>Evento do Sistema</label><select id="dp-pc-ev" onchange="dpOnEvChange('prestacao')">${dpEvOpts()}</select></div>
+<div class="dsec">Despesas por Categoria</div>
+<div id="dp-pc-cats"></div>
+<button class="dadd" onclick="dpAddCat()">+ Adicionar Categoria</button>
+<div class="dsec">Locação do Acervo ARDEN</div>
+<div id="dp-pc-ac"></div>
+<button class="dadd" onclick="dpAddAcervo()">+ Adicionar Item do Acervo</button>
+<div class="dsec">Declaração</div>
+<div class="dfi"><label>Texto da Declaração (opcional)</label><textarea id="dp-pc-decl" oninput="dpRenderPrestacao()"></textarea></div>`;
+}
+
+// ── Proposta items ──
+function dpAddPI(){dpPItens.push({id:dpUid(),nome:'',qtd:'1',un:'serviço',vunit:'',desc:''});renderDpPI();dpRenderProposta();}
+function renderDpPI(){
+  const w=_$('dp-p-itens');if(!w)return;
+  if(!dpPItens.length){w.innerHTML='<div class="dni">Sem itens. Clique em "+ Adicionar".</div>';return;}
+  let html='';
+  dpPItens.forEach(it=>{
+    html+='<div class="died"><button class="died-del" onclick="dpDelPI(\''+it.id+'\')">✕</button>';
+    html+='<div class="dfi"><label>Descrição</label><input value="'+it.nome+'" placeholder="Ex: Decoração salão principal" oninput="dpUpdPI(\''+it.id+'\',\'nome\',this.value)"></div>';
+    html+='<div class="dg2" style="gap:6px"><div class="dfi"><label>Qtd</label><input type="number" value="'+it.qtd+'" oninput="dpUpdPI(\''+it.id+'\',\'qtd\',this.value)"></div>';
+    html+='<div class="dfi"><label>Un.</label><select onchange="dpUpdPI(\''+it.id+'\',\'un\',this.value)"><option '+(it.un==='serviço'?'selected':'')+'>serviço</option><option '+(it.un==='ambiente'?'selected':'')+'>ambiente</option><option '+(it.un==='peça'?'selected':'')+'>peça</option><option '+(it.un==='kit'?'selected':'')+'>kit</option><option '+(it.un==='un'?'selected':'')+'>un</option></select></div>';
+    html+='<div class="dfi"><label>Valor Unit. (R$)</label><input type="number" value="'+it.vunit+'" placeholder="0,00" oninput="dpUpdPI(\''+it.id+'\',\'vunit\',parseFloat(this.value)||0);dpRenderProposta()"></div>';
+    html+='<div class="dfi dgf"><label>Detalhes</label><input value="'+it.desc+'" placeholder="Cores, materiais..." oninput="dpUpdPI(\''+it.id+'\',\'desc\',this.value)"></div>';
+    html+='</div></div>';
+  });
+  w.innerHTML=html;
+}
+function dpDelPI(id){dpPItens=dpPItens.filter(i=>i.id!==id);renderDpPI();dpRenderProposta();}
+function dpUpdPI(id,k,v2){const i=dpPItens.find(i=>i.id===id);if(i){i[k]=v2;dpRenderProposta();}}
+
+// ── Contrato items ──
+function dpAddCI(){dpCItens.push({id:dpUid(),nome:'',desc:''});renderDpCI();dpRenderContrato();}
+function renderDpCI(){
+  const w=_$('dp-c-itens');if(!w)return;
+  if(!dpCItens.length){w.innerHTML='<div class="dni">Sem itens.</div>';return;}
+  let html='';
+  dpCItens.forEach(it=>{
+    html+='<div class="died"><button class="died-del" onclick="dpDelCI(\''+it.id+'\')">✕</button>';
+    html+='<div class="dfi"><label>Item</label><input value="'+it.nome+'" placeholder="Ex: Decoração salão principal" oninput="dpUpdCI(\''+it.id+'\',\'nome\',this.value)"></div>';
+    html+='<div class="dfi" style="margin-bottom:0"><label>Especificação</label><input value="'+it.desc+'" placeholder="Cores, materiais..." oninput="dpUpdCI(\''+it.id+'\',\'desc\',this.value)"></div>';
+    html+='</div>';
+  });
+  w.innerHTML=html;
+}
+function dpDelCI(id){dpCItens=dpCItens.filter(i=>i.id!==id);renderDpCI();dpRenderContrato();}
+function dpUpdCI(id,k,v2){const i=dpCItens.find(i=>i.id===id);if(i){i[k]=v2;dpRenderContrato();}}
+
+// ── Prestação cats ──
+function dpAddCat(nome){
+  nome=nome||CATS_LIST[0];
+  dpPCCats.push({id:dpUid(),nome,itens:[{id:dpUid(),desc:'',forn:'',comprov:COMPROV_LIST[0],val:0}]});
+  renderDpCats();dpRenderPrestacao();
+}
+function renderDpCats(){
+  const w=_$('dp-pc-cats');if(!w)return;
+  if(!dpPCCats.length){w.innerHTML='<div class="dni">Nenhuma categoria.</div>';return;}
+  let html='';
+  dpPCCats.forEach(cat=>{
+    html+='<div class="died" style="margin-bottom:12px"><button class="died-del" onclick="dpDelCat(\''+cat.id+'\')">✕</button>';
+    html+='<div class="dfi" style="margin-bottom:8px"><label>Categoria</label><select onchange="dpUpdCat(\''+cat.id+'\',\'nome\',this.value)">';
+    CATS_LIST.forEach(o=>{html+='<option '+(cat.nome===o?'selected':'')+'>'+o+'</option>';});
+    html+='</select></div>';
+    cat.itens.forEach(it=>{
+      html+='<div style="background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rs);padding:8px;margin-bottom:6px;position:relative">';
+      html+='<button style="position:absolute;top:5px;right:6px;background:none;border:none;color:var(--td);cursor:pointer;font-size:12px" onclick="dpDelCatIt(\''+cat.id+'\',\''+it.id+'\')">✕</button>';
+      html+='<div class="dfi" style="margin-bottom:5px"><label>Descrição</label><input value="'+it.desc+'" placeholder="Ex: Balões Cromados" oninput="dpUpdCatIt(\''+cat.id+'\',\''+it.id+'\',\'desc\',this.value)"></div>';
+      html+='<div class="dg2" style="gap:6px">';
+      html+='<div class="dfi" style="margin-bottom:0"><label>Fornecedor</label><input value="'+it.forn+'" placeholder="Ex: Vivian Festas" oninput="dpUpdCatIt(\''+cat.id+'\',\''+it.id+'\',\'forn\',this.value)"></div>';
+      html+='<div class="dfi" style="margin-bottom:0"><label>Comprovante</label><select onchange="dpUpdCatIt(\''+cat.id+'\',\''+it.id+'\',\'comprov\',this.value)">';
+      COMPROV_LIST.forEach(o=>{html+='<option '+(it.comprov===o?'selected':'')+'>'+o+'</option>';});
+      html+='</select></div>';
+      html+='<div class="dfi dgf" style="margin-bottom:0"><label>Valor (R$)</label><input type="number" value="'+it.val+'" placeholder="0,00" oninput="dpUpdCatIt(\''+cat.id+'\',\''+it.id+'\',\'val\',parseFloat(this.value)||0)"></div>';
+      html+='</div></div>';
+    });
+    html+='<button class="dadd" style="margin-top:4px" onclick="dpAddCatIt(\''+cat.id+'\')">+ Item</button>';
+    html+='</div>';
+  });
+  w.innerHTML=html;
+}
+function dpDelCat(id){dpPCCats=dpPCCats.filter(c=>c.id!==id);renderDpCats();dpRenderPrestacao();}
+function dpUpdCat(id,k,v2){const c=dpPCCats.find(c=>c.id===id);if(c){c[k]=v2;dpRenderPrestacao();}}
+function dpAddCatIt(catId){const c=dpPCCats.find(c=>c.id===catId);if(c){c.itens.push({id:dpUid(),desc:'',forn:'',comprov:COMPROV_LIST[0],val:0});renderDpCats();dpRenderPrestacao();}}
+function dpDelCatIt(cId,iId){const c=dpPCCats.find(c=>c.id===cId);if(c){c.itens=c.itens.filter(i=>i.id!==iId);renderDpCats();dpRenderPrestacao();}}
+function dpUpdCatIt(cId,iId,k,v2){const c=dpPCCats.find(c=>c.id===cId);if(c){const it=c.itens.find(i=>i.id===iId);if(it){it[k]=v2;dpRenderPrestacao();}}}
+
+// ── Acervo ──
+function dpAddAcervo(){
+  let opts='';ACERVO_DEFAULT.forEach((a,i)=>{opts+='\n'+(i+1)+'. '+a.nome+' — '+fRd(a.val);});
+  opts+='\n'+(ACERVO_DEFAULT.length+1)+'. Item personalizado';
+  const sel=parseInt(prompt('Selecione um item do acervo:'+opts)||'0');
+  if(sel>=1&&sel<=ACERVO_DEFAULT.length){dpPCAc.push({id:dpUid(),nome:ACERVO_DEFAULT[sel-1].nome,val:ACERVO_DEFAULT[sel-1].val});}
+  else if(sel===ACERVO_DEFAULT.length+1){
+    const nome=prompt('Nome do item:');
+    const val=parseFloat(prompt('Valor de locação (R$):')||'0');
+    if(nome)dpPCAc.push({id:dpUid(),nome,val});
+  }
+  renderDpAc();dpRenderPrestacao();
+}
+function renderDpAc(){
+  const w=_$('dp-pc-ac');if(!w)return;
+  if(!dpPCAc.length){w.innerHTML='<div class="dni">Nenhum item do acervo.</div>';return;}
+  let html='';
+  dpPCAc.forEach(a=>{
+    html+='<div class="died" style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:7px">';
+    html+='<div style="flex:1"><div style="font-size:12px;color:var(--tx);margin-bottom:4px">'+a.nome+'</div>';
+    html+='<input type="number" value="'+a.val+'" style="width:120px;font-size:11px;padding:3px 8px" oninput="dpUpdAc(\''+a.id+'\',parseFloat(this.value)||0)"></div>';
+    html+='<button class="died-del" style="position:static" onclick="dpDelAc(\''+a.id+'\')">✕</button>';
+    html+='</div>';
+  });
+  w.innerHTML=html;
+}
+function dpUpdAc(id,v2){const a=dpPCAc.find(a=>a.id===id);if(a){a.val=v2;dpRenderPrestacao();}}
+function dpDelAc(id){dpPCAc=dpPCAc.filter(a=>a.id!==id);renderDpAc();dpRenderPrestacao();}
+
+function dpShowPreview(html){
+  const e=_$('dp-empty');if(e)e.style.display='none';
+  const o=_$('dp-out');if(o){o.style.display='block';o.innerHTML=html;}
+}
+function dpHidePreview(){
+  const e=_$('dp-empty');if(e)e.style.display='flex';
+  const o=_$('dp-out');if(o){o.style.display='none';}
+}
+
+// ── Document CSS ──
+const DOC_CSS=`
+:root{--dg:#2d5016;--dg2:#3a6b1e;--dg3:#4a8022;--dgl:#eef5e6;--dgm:#c4d8a0;--dl:#f6f5f0;--db:#deded8;--dt:#1c1c1a;--dm:#58584e;--dr:#b02a1a;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:'DM Sans',sans-serif}
+.doc-page{width:794px;background:#fff;font-size:12px;color:var(--dt);margin-bottom:20px;box-shadow:0 6px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;page-break-after:always}
+.doc-page:last-child{page-break-after:avoid}
+.dh{background:var(--dg);padding:20px 36px 16px;display:flex;align-items:center;justify-content:space-between}
+.dh-logo{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:#fff;letter-spacing:7px;text-transform:uppercase}
+.dh-sub{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:3px;text-transform:uppercase;margin-top:3px}
+.dh-right{text-align:right}.dh-cnpj{font-size:11px;color:#fff;font-weight:500;margin-bottom:3px}.dh-info{font-size:10px;color:rgba(255,255,255,.6);line-height:1.7}
+.dtb{background:var(--dg2);padding:9px 36px;display:flex;align-items:center;justify-content:space-between}
+.dtb-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:#fff;letter-spacing:3px;text-transform:uppercase}
+.dtb-num{font-size:10px;color:rgba(255,255,255,.65)}
+.dbd{padding:22px 36px 28px;flex:1}
+.dmeta{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-bottom:18px}
+.dmeta-row{display:flex;border-bottom:1px solid var(--db)}.dmeta-row:last-child{border-bottom:none}
+.dmc{flex:1;padding:9px 13px;border-right:1px solid var(--db)}.dmc:last-child{border-right:none}.dmc-full{flex:2}
+.dmc-l{font-size:9px;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.dmc-v{font-size:12px;color:var(--dt);font-weight:500;line-height:1.4}
+.dsh{background:var(--dg);color:#fff;padding:7px 14px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;border-radius:4px 4px 0 0;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.dsh:first-child{margin-top:0}.dsh span{color:rgba(255,255,255,.65);font-size:10px}
+.dtbl{width:100%;border-collapse:collapse;border:1px solid var(--db);border-top:none}
+.dtbl th{padding:6px 12px;text-align:left;font-size:9px;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;background:var(--dl);border-bottom:1px solid var(--db);font-weight:500}
+.dtbl th.r{text-align:right}.dtbl td{padding:9px 12px;border-bottom:1px solid var(--db);font-size:11.5px;color:var(--dt);vertical-align:top;line-height:1.4}
+.dtbl td.r{text-align:right;white-space:nowrap;font-weight:500}.dtbl td.dn{text-align:center;color:var(--dm);font-size:11px;width:28px}
+.dtbl td .dsub{font-size:10px;color:var(--dm);margin-top:2px}.dtbl tr:nth-child(even) td{background:#fafaf7}.dtbl tr:last-child td{border-bottom:none}
+.dtbl-sub td{background:var(--dgl)!important;font-weight:500;color:var(--dg3);border-top:1px solid var(--dgm)!important;font-size:11px}
+.dpay{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-top:16px}
+.dpay-hd{background:var(--dg);color:#fff;padding:8px 16px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase}
+.dpay-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--db)}.dpay-row:last-child{border-bottom:none}
+.dpay-row.hl{background:var(--dgl)}.dpay-lbl{font-size:12px;color:var(--dt);font-weight:500}.dpay-note{font-size:10px;color:var(--dm);margin-top:2px}
+.dpay-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--dg3)}.dpay-val.red{color:var(--dr)}
+.dtot{border:1px solid var(--db);border-radius:5px;overflow:hidden;margin-top:16px}
+.dtot-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--db)}.dtot-row:last-child{border-bottom:none}
+.dtot-row.tg{background:var(--dgl)}.dtot-row.sr{background:#fef0ee}.dtot-row.sg{background:var(--dgl)}
+.dtot-lbl{font-size:12px;color:var(--dt)}.dtot-lbl .dn2{font-size:10px;color:var(--dm);display:block;margin-top:1px}
+.dtot-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dt)}
+.dtot-row.tg .dtot-val{color:var(--dg3);font-size:24px}.dtot-row.sr .dtot-lbl,.dtot-row.sr .dtot-val{color:var(--dr)}.dtot-row.sg .dtot-lbl,.dtot-row.sg .dtot-val{color:var(--dg3)}
+.dcls{margin-bottom:14px}.dcls-hd{font-size:10px;font-weight:600;color:var(--dg);letter-spacing:.8px;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--dgm);margin-bottom:7px}
+.dcls-body{font-size:11.5px;color:var(--dt);line-height:1.8}.dcls-li{display:flex;gap:8px;padding:3px 0}.dcls-li::before{content:'—';color:var(--dm);flex-shrink:0}
+.dctbl{width:100%;border-collapse:collapse;border:1px solid var(--db);overflow:hidden;margin-top:8px}
+.dctbl th{background:var(--dl);padding:7px 12px;font-size:9px;text-align:left;color:var(--dm);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--db);font-weight:500}
+.dctbl td{padding:8px 12px;border-bottom:1px solid var(--db);font-size:11px;color:var(--dt)}.dctbl tr:last-child td{border-bottom:none}.dctbl tr:nth-child(even) td{background:#fafaf7}
+.dhlbox{background:var(--dgl);border:1px solid var(--dgm);border-left:4px solid var(--dg3);border-radius:0 5px 5px 0;padding:12px 15px;font-size:11.5px;line-height:1.8;color:var(--dt);margin-top:14px}
+.dhlbox strong{color:var(--dg)}.ddecl{background:var(--dl);border:1px solid var(--db);border-radius:5px;padding:15px;margin-top:16px;font-size:11.5px;line-height:1.9;color:var(--dt)}
+.dsigs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:28px}.dsig{display:flex;flex-direction:column;gap:4px}
+.dsig-line{height:48px;border-bottom:1px solid var(--dt);margin-bottom:7px}.dsig-name{font-size:11.5px;font-weight:500;color:var(--dt);text-align:center}
+.dsig-sub{font-size:10px;color:var(--dm);text-align:center}.dsig-role{font-size:9px;color:var(--dm);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.dwitn{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px;padding-top:16px;border-top:1px solid var(--db)}
+.dft{background:var(--dg);padding:9px 36px;display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.dft-l{font-size:9px;color:rgba(255,255,255,.55)}.dft-r{font-size:9px;color:rgba(255,255,255,.4)}
+.drec-tbl{width:100%;border-collapse:collapse;border:1px solid var(--db)}.drec-tbl th{background:var(--dg);color:#fff;padding:8px 14px;font-size:10px;font-weight:500;text-transform:uppercase;text-align:left}
+.drec-tbl th.r{text-align:right}.drec-tbl td{padding:10px 14px;border-bottom:1px solid var(--db);font-size:11.5px;color:var(--dt)}
+.drec-tbl td.r{text-align:right;font-weight:500}.drec-tbl td.dn{text-align:center;color:var(--dm);width:32px}
+.drec-tbl tr:nth-child(even) td{background:#fafaf7}.drec-tbl tr.dtotal td{background:var(--dg);color:#fff;font-weight:600;font-size:13px}.drec-tbl tr.dtotal td.r{font-family:'Cormorant Garamond',serif;font-size:18px}
+@page{margin:0;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+`;
+
+function imprimirDocPanel(){
+  const out=_$('dp-out');
+  if(!out||out.style.display==='none'){alert('Gere o documento antes de imprimir.');return;}
+  const win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"><style>'+DOC_CSS+'</style></head><body>'+out.innerHTML+'</body></html>');
+  win.document.close();
+  setTimeout(()=>win.print(),600);
+}
+
+// ── Render Proposta ──
+function dpRenderProposta(){
+  const cli=_v('dp-p-cli');const evNm=_v('dp-p-ev-nome');
+  if(!cli&&!evNm){dpHidePreview();return;}
+  const num=_v('dp-p-num')||'PROP-001/2026';
+  const docDate=fDd(_v('dp-p-dt')||todayStr());
+  const total=_n('dp-p-val');const sinal=_n('dp-p-sinal');const saldo=total-sinal;
+  const itensTot=dpPItens.reduce((s,i)=>s+(parseFloat(i.vunit)||0)*(parseFloat(i.qtd)||1),0);
+  const usaV=dpPItens.some(i=>parseFloat(i.vunit)>0);
+  let itHtml='';
+  if(dpPItens.length){
+    itHtml='<div class="dsh" style="margin-top:16px">ITENS E SERVIÇOS INCLUSOS'+(usaV?'<span>Subtotal: '+fRd(itensTot)+'</span>':'')+'</div>';
+    itHtml+='<table class="dtbl"><thead><tr><th style="width:28px">Nº</th><th>Descrição</th><th>Qtd</th><th>Un.</th>'+(usaV?'<th class="r">V.Unit.</th><th class="r">Total</th>':'')+'</tr></thead><tbody>';
+    dpPItens.forEach((it,idx)=>{
+      const vunit=parseFloat(it.vunit)||0;const qtd=parseFloat(it.qtd)||1;
+      itHtml+='<tr><td class="dn">'+(idx+1)+'</td><td><div>'+(it.nome||'—')+'</div>'+(it.desc?'<div class="dsub">'+it.desc+'</div>':'')+'</td><td>'+(it.qtd||1)+'</td><td>'+it.un+'</td>'+(usaV?'<td class="r">'+fRd(vunit)+'</td><td class="r">'+fRd(vunit*qtd)+'</td>':'')+'</tr>';
+    });
+    if(usaV)itHtml+='<tr class="dtbl-sub"><td colspan="'+(usaV?4:4)+'"></td><td class="r" colspan="2">Subtotal: '+fRd(itensTot)+'</td></tr>';
+    itHtml+='</tbody></table>';
+  }
+  const tema=_v('dp-p-tema');const cores=_v('dp-p-cores');
+  let metaExtra='';
+  if(tema||cores)metaExtra='<div class="dmeta-row">'+(tema?'<div class="dmc"><div class="dmc-l">Tema</div><div class="dmc-v">'+tema+'</div></div>':'')+(cores?'<div class="dmc"><div class="dmc-l">Cores</div><div class="dmc-v">'+cores+'</div></div>':'')+'</div>';
+  let payRows='<div class="dpay-row hl"><div><div class="dpay-lbl">Valor Total do Serviço</div>'+(_v('dp-p-exec')?'<div class="dpay-note">Execução: '+_v('dp-p-exec')+'</div>':'')+'</div><div class="dpay-val">'+fRd(total)+'</div></div>';
+  if(sinal>0)payRows+='<div class="dpay-row"><div><div class="dpay-lbl">Sinal / Entrada</div><div class="dpay-note">'+(_v('dp-p-prazo-s')||'Prazo a combinar')+'</div></div><div class="dpay-val red">'+fRd(sinal)+'</div></div><div class="dpay-row"><div><div class="dpay-lbl">Saldo Restante</div><div class="dpay-note">'+_v('dp-p-forma')+'</div></div><div class="dpay-val">'+fRd(saldo)+'</div></div>';
+  if(_v('dp-p-desmont'))payRows+='<div class="dpay-row"><div class="dpay-lbl" style="font-weight:400;font-size:11px">Desmontagem</div><div style="font-size:11px;color:var(--dm)">'+_v('dp-p-desmont')+'</div></div>';
+  let extras='';
+  if(_v('dp-p-nao'))extras+='<div class="dhlbox"><strong>O que NÃO está incluso:</strong><br>'+_v('dp-p-nao').replace(/\n/g,'<br>')+'</div>';
+  if(_v('dp-p-cond'))extras+='<div class="dhlbox" style="background:#fffcf0;border-color:#e8d88a;border-left-color:#c9a84c"><strong>Condições Especiais:</strong><br>'+_v('dp-p-cond').replace(/\n/g,'<br>')+'</div>';
+  extras+='<div class="dhlbox" style="background:#fffcf0;border-color:#e8d88a;border-left-color:#c9a84c;margin-top:12px"><strong>Política de Cancelamento:</strong><br>+15 dias: reembolso integral do sinal. 8–14 dias: 50% do sinal. 7 dias ou menos: sinal não reembolsável.</div>';
+  dpShowPreview('<div class="doc-page"><div class="dh"><div><div class="dh-logo">ARDEN</div><div class="dh-sub">Designer de Celebrações</div></div><div class="dh-right"><div class="dh-cnpj">CNPJ: 65.690.774/0001-37</div><div class="dh-info">São Pedro da Aldeia, RJ<br>Data: '+docDate+(_v('dp-p-val-dt')?'<br>Válida até: '+fDd(_v('dp-p-val-dt')):'')+'</div></div></div><div class="dtb"><div class="dtb-title">PROPOSTA COMERCIAL</div><div class="dtb-num">Nº '+num+'</div></div><div class="dbd"><div class="dmeta"><div class="dmeta-row"><div class="dmc dmc-full"><div class="dmc-l">Cliente</div><div class="dmc-v">'+(cli||'—')+'</div></div><div class="dmc"><div class="dmc-l">CPF/CNPJ</div><div class="dmc-v">'+(_v('dp-p-doc')||'—')+'</div></div></div><div class="dmeta-row"><div class="dmc"><div class="dmc-l">WhatsApp</div><div class="dmc-v">'+(_v('dp-p-tel')||'—')+'</div></div><div class="dmc dmc-full"><div class="dmc-l">Endereço</div><div class="dmc-v">'+(_v('dp-p-end')||'—')+'</div></div></div><div class="dmeta-row"><div class="dmc dmc-full"><div class="dmc-l">Evento</div><div class="dmc-v">'+(evNm||'—')+'</div></div><div class="dmc"><div class="dmc-l">Tipo</div><div class="dmc-v">'+_v('dp-p-tipo')+'</div></div></div><div class="dmeta-row"><div class="dmc"><div class="dmc-l">Data</div><div class="dmc-v">'+fDd(_v('dp-p-ev-dt'))+'</div></div><div class="dmc"><div class="dmc-l">Horário</div><div class="dmc-v">'+(_v('dp-p-hr')||'—')+'</div></div><div class="dmc dmc-full"><div class="dmc-l">Local</div><div class="dmc-v">'+(_v('dp-p-local')||'—')+'</div></div></div>'+metaExtra+'</div>'+itHtml+'<div class="dpay"><div class="dpay-hd">VALORES E FORMA DE PAGAMENTO</div>'+payRows+'</div>'+extras+'<div class="dsigs"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">ARDEN Designer de Celebrações</div><div class="dsig-sub">CNPJ: 65.690.774/0001-37</div><div class="dsig-role">Prestadora</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">'+(cli||'Contratante')+'</div>'+(_v('dp-p-doc')?'<div class="dsig-sub">'+_v('dp-p-doc')+'</div>':'')+'<div class="dsig-role">Contratante</div></div></div><div style="text-align:center;margin-top:12px;font-size:10px;color:var(--dm)">São Pedro da Aldeia, '+docDate+'</div></div><div class="dft"><div class="dft-l">ARDEN Designer de Celebrações | CNPJ: 65.690.774/0001-37 | São Pedro da Aldeia, RJ</div><div class="dft-r">Proposta Nº '+num+' | '+docDate+'</div></div></div>');
+}
+
+// ── Render Contrato ──
+function dpRenderContrato(){
+  const cli=_v('dp-c-cli');const evNm=_v('dp-c-ev-nome');
+  if(!cli&&!evNm){dpHidePreview();return;}
+  const num=_v('dp-c-num')||'CONT-001/2026';
+  const docDate=fDd(_v('dp-c-dt')||todayStr());
+  const total=_n('dp-c-total');const sinal=_n('dp-c-sinal');const saldo=total-sinal;
+  const extra=_v('dp-c-extra');
+  let itHtml='';
+  if(dpCItens.length){
+    itHtml='<div class="dsh">SERVIÇOS E ITENS CONTRATADOS</div><table class="dtbl"><thead><tr><th style="width:28px">Nº</th><th>Descrição</th><th>Especificação</th></tr></thead><tbody>';
+    dpCItens.forEach((it,i)=>{itHtml+='<tr><td class="dn">'+(i+1)+'</td><td style="font-weight:500">'+(it.nome||'—')+'</td><td style="color:var(--dm)">'+(it.desc||'—')+'</td></tr>';});
+    itHtml+='</tbody></table>';
+  }
+  const partes='<table class="dtbl"><thead><tr><th style="width:110px">Parte</th><th>Dados</th></tr></thead><tbody><tr><td style="font-weight:500;color:var(--dg3);vertical-align:top">CONTRATADA</td><td><strong>ARDEN Designer de Celebrações</strong><br><span style="font-size:10.5px;color:var(--dm)">CNPJ: 65.690.774/0001-37 | São Pedro da Aldeia, RJ</span></td></tr><tr><td style="font-weight:500;color:var(--dm);vertical-align:top">CONTRATANTE</td><td><strong>'+(cli||'—')+'</strong><br><span style="font-size:10.5px;color:var(--dm)">'+[_v('dp-c-doc')?'CPF/CNPJ: '+_v('dp-c-doc'):'',_v('dp-c-rg')?'RG: '+_v('dp-c-rg'):'',_v('dp-c-tel')?'Tel: '+_v('dp-c-tel'):'',_v('dp-c-email')?_v('dp-c-email'):''].filter(Boolean).join(' | ')+'</span>'+(_v('dp-c-end')?'<br><span style="font-size:10.5px;color:var(--dm)">'+_v('dp-c-end')+'</span>':'')+'</td></tr></tbody></table>';
+  let payRows='<div class="dpay-row hl"><div class="dpay-lbl"><strong>Valor Total do Contrato</strong></div><div class="dpay-val">'+fRd(total)+'</div></div>';
+  if(sinal>0)payRows+='<div class="dpay-row"><div><div class="dpay-lbl">Sinal (na assinatura)</div><div class="dpay-note">'+(_v('dp-c-prazo-s')||'Prazo a combinar')+'</div></div><div class="dpay-val red">'+fRd(sinal)+'</div></div><div class="dpay-row"><div><div class="dpay-lbl">Saldo Restante</div><div class="dpay-note">'+_v('dp-c-forma')+'</div></div><div class="dpay-val">'+fRd(saldo)+'</div></div>';
+  const cancelTbl='<table class="dctbl"><thead><tr><th>Prazo</th><th>Política</th></tr></thead><tbody><tr><td>Mais de 15 dias</td><td style="color:var(--dg3);font-weight:500">Reembolso integral do sinal</td></tr><tr><td>Entre 8 e 14 dias</td><td style="color:#c87000;font-weight:500">Reembolso de 50% do sinal</td></tr><tr><td>7 dias ou menos</td><td style="color:var(--dr);font-weight:500">Sinal não reembolsável</td></tr><tr><td>No show</td><td style="color:var(--dr);font-weight:500">Valor total não reembolsável</td></tr></tbody></table>';
+  dpShowPreview('<div class="doc-page"><div class="dh"><div><div class="dh-logo">ARDEN</div><div class="dh-sub">Designer de Celebrações</div></div><div class="dh-right"><div class="dh-cnpj">CNPJ: 65.690.774/0001-37</div><div class="dh-info">São Pedro da Aldeia, RJ<br>Data: '+docDate+'</div></div></div><div class="dtb"><div class="dtb-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div><div class="dtb-num">Nº '+num+'</div></div><div class="dbd"><div class="dsh" style="margin-top:0">QUALIFICAÇÃO DAS PARTES</div>'+partes+itHtml+'<div class="dcls" style="margin-top:14px"><div class="dcls-hd">Cláusula 1ª — Do Objeto</div><div class="dcls-body">A CONTRATADA obriga-se a prestar serviços de <strong>'+_v('dp-c-tipo').toLowerCase()+'</strong> para o evento <strong>"'+(evNm||'—')+'"</strong>, em <strong>'+fDd(_v('dp-c-ev-dt'))+'</strong>'+(_v('dp-c-mont')?', montagem às <strong>'+_v('dp-c-mont')+'</strong>':'')+', local: <strong>'+(_v('dp-c-local')||'a definir')+'</strong>. Desmontagem: <strong>'+(_v('dp-c-desmont')||'conforme combinado')+'</strong>.</div></div><div class="dcls"><div class="dcls-hd">Cláusula 2ª — Do Valor e Pagamento</div><div class="dpay" style="margin-top:8px"><div class="dpay-hd">RESUMO DE PAGAMENTO</div>'+payRows+'</div></div><div class="dcls"><div class="dcls-hd">Cláusula 3ª — Obrigações da Contratada</div><div class="dcls-body"><div class="dcls-li">Executar os serviços com materiais de qualidade;</div><div class="dcls-li">Comparecer com antecedência mínima de 2 horas;</div><div class="dcls-li">Garantir a qualidade estética conforme briefing;</div><div class="dcls-li">Realizar desmontagem no prazo estabelecido.</div></div></div><div class="dcls"><div class="dcls-hd">Cláusula 4ª — Obrigações do Contratante</div><div class="dcls-body"><div class="dcls-li">Efetuar os pagamentos nos prazos acordados;</div><div class="dcls-li">Garantir acesso ao local com antecedência;</div><div class="dcls-li">Comunicar alterações com mínimo 72h de antecedência;</div><div class="dcls-li">Responsabilizar-se por danos aos materiais locados.</div></div></div><div class="dcls"><div class="dcls-hd">Cláusula 5ª — Política de Cancelamento</div>'+cancelTbl+'</div>'+(extra?'<div class="dcls"><div class="dcls-hd">Cláusula 6ª — Condições Especiais</div><div class="dcls-body">'+extra.replace(/\n/g,'<br>')+'</div></div>':'')+'<div class="dcls"><div class="dcls-hd">Cláusula '+(extra?'7ª':'6ª')+' — Do Foro</div><div class="dcls-body">Foro da Comarca de São Pedro da Aldeia, RJ.</div></div><div style="text-align:center;margin:16px 0 14px;font-size:11px;color:var(--dm)">São Pedro da Aldeia, '+docDate+'</div><div class="dsigs"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">ARDEN Designer de Celebrações</div><div class="dsig-sub">CNPJ: 65.690.774/0001-37</div><div class="dsig-role">Contratada</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">'+(cli||'Contratante')+'</div>'+(_v('dp-c-doc')?'<div class="dsig-sub">'+_v('dp-c-doc')+'</div>':'')+'<div class="dsig-role">Contratante</div></div></div><div class="dwitn"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">Testemunha 1</div><div class="dsig-sub">CPF: _____________________</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">Testemunha 2</div><div class="dsig-sub">CPF: _____________________</div></div></div></div><div class="dft"><div class="dft-l">ARDEN Designer de Celebrações | CNPJ: 65.690.774/0001-37 | São Pedro da Aldeia, RJ</div><div class="dft-r">Contrato Nº '+num+' | '+docDate+'</div></div></div>');
+}
+
+// ── Render Prestação ──
+function dpRenderPrestacao(){
+  const cli=_v('dp-pc-cli');const evNm=_v('dp-pc-ev-nome');
+  if(!cli&&!evNm){dpHidePreview();return;}
+  const num=_v('dp-pc-num')||'PC-001/2026';
+  const emiss=_v('dp-pc-emiss')||todayStr();
+  const docDate=fDd(emiss);
+  const adiant=_n('dp-pc-adiant');
+  let catHtml='';let totalComp=0;let itemN=0;
+  dpPCCats.forEach(cat=>{
+    const sub=cat.itens.reduce((s,i)=>s+i.val,0);totalComp+=sub;
+    catHtml+='<div class="dsh" style="'+(catHtml?'margin-top:14px':'margin-top:0')+'">'+(cat.nome||'Categoria')+'<span>Subtotal: '+fRd(sub)+'</span></div>';
+    catHtml+='<table class="dtbl"><thead><tr><th style="width:28px">Nº</th><th>Descrição</th><th>Fornecedor</th><th>Comprovante</th><th class="r">Valor</th></tr></thead><tbody>';
+    cat.itens.forEach(it=>{catHtml+='<tr><td class="dn">'+(++itemN)+'</td><td>'+(it.desc||'—')+'</td><td><span style="font-size:10.5px;color:var(--dm)">'+(it.forn||'—')+'</span></td><td><span style="font-size:10px;color:var(--dm)">'+it.comprov+'</span></td><td class="r">'+fRd(it.val)+'</td></tr>';});
+    catHtml+='<tr class="dtbl-sub"><td colspan="4" style="text-align:right;padding-right:12px">Subtotal '+cat.nome+':</td><td class="r">'+fRd(sub)+'</td></tr>';
+    catHtml+='</tbody></table>';
+  });
+  let acHtml='';let totalAc=0;
+  if(dpPCAc.length){
+    totalAc=dpPCAc.reduce((s,a)=>s+a.val,0);
+    acHtml='<div class="dsh" style="margin-top:14px">Locação de Materiais — Acervo ARDEN<span>Subtotal: '+fRd(totalAc)+'</span></div>';
+    acHtml+='<table class="dtbl"><thead><tr><th style="width:28px">Nº</th><th>Descrição</th><th>Fornecedor</th><th>Comprovante</th><th class="r">Valor</th></tr></thead><tbody>';
+    dpPCAc.forEach(a=>{acHtml+='<tr><td class="dn">'+(++itemN)+'</td><td>'+a.nome+'</td><td><span style="font-size:10.5px;color:var(--dm)">ARDEN Designer de Celebrações</span></td><td><span style="font-size:10px;color:var(--dm)">Recibo REC-001/2026</span></td><td class="r">'+fRd(a.val)+'</td></tr>';});
+    acHtml+='<tr class="dtbl-sub"><td colspan="4" style="text-align:right;padding-right:12px">Subtotal Locação Acervo:</td><td class="r">'+fRd(totalAc)+'</td></tr></tbody></table>';
+  }
+  const totalGeral=totalComp+totalAc;const saldo=totalGeral-adiant;const saldoPos=saldo>0;
+  const declTxt=_v('dp-pc-decl')||'Eu, responsável pela ARDEN Designer de Celebrações, CNPJ 65.690.774/0001-37, declaro que os valores apresentados são fidedignos e correspondem integralmente aos gastos realizados para a execução do evento contratado pela cliente '+(cli||'—')+'. Todos os comprovantes originais estão disponíveis para verificação.'+(dpPCAc.length?' A locação de materiais do acervo próprio da ARDEN no valor de '+fRd(totalAc)+' está documentada pelo Recibo Nº REC-001/2026.':'');
+  let recPage='';
+  if(dpPCAc.length){
+    recPage='<div class="doc-page" style="margin-top:20px"><div class="dh"><div><div class="dh-logo">ARDEN</div><div class="dh-sub">Designer de Celebrações</div></div><div class="dh-right"><div class="dh-cnpj">CNPJ: 65.690.774/0001-37</div><div class="dh-info">São Pedro da Aldeia, RJ</div></div></div><div class="dtb"><div class="dtb-title">RECIBO DE LOCAÇÃO DE MATERIAIS</div><div class="dtb-num">Nº REC-001/2026</div></div><div class="dbd"><div class="dmeta"><div class="dmeta-row"><div class="dmc"><div class="dmc-l">LOCADOR</div><div class="dmc-v">ARDEN Designer de Celebrações</div></div><div class="dmc"><div class="dmc-l">CNPJ</div><div class="dmc-v">65.690.774/0001-37</div></div></div><div class="dmeta-row"><div class="dmc"><div class="dmc-l">LOCATÁRIO</div><div class="dmc-v">'+(cli||'—')+'</div></div><div class="dmc"><div class="dmc-l">Data</div><div class="dmc-v">'+docDate+'</div></div></div><div class="dmeta-row"><div class="dmc" style="flex:1;border-right:none"><div class="dmc-l">Referente ao Evento</div><div class="dmc-v">'+(evNm||'—')+'</div></div></div></div><div class="dsh" style="margin-top:16px">ITENS LOCADOS</div><table class="drec-tbl"><thead><tr><th style="width:40px">Nº</th><th>Descrição</th><th style="width:50px;text-align:center">Qtd</th><th class="r" style="width:120px">Valor</th></tr></thead><tbody>';
+    dpPCAc.forEach((a,i)=>{recPage+='<tr><td class="dn">'+(i+1)+'</td><td>'+a.nome+'</td><td style="text-align:center">1</td><td class="r">'+fRd(a.val)+'</td></tr>';});
+    recPage+='<tr class="dtotal"><td colspan="3" style="text-align:right;padding-right:16px;letter-spacing:1px">TOTAL LOCAÇÃO</td><td class="r">'+fRd(totalAc)+'</td></tr></tbody></table><div class="ddecl" style="margin-top:16px">Declaro que recebi de <strong>'+(cli||'—')+'</strong> o valor de <strong>'+fRd(totalAc)+'</strong> referente à locação dos materiais listados, pertencentes ao acervo da ARDEN Designer de Celebrações.</div><div class="dsigs" style="margin-top:24px"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">ARDEN Designer de Celebrações</div><div class="dsig-sub">CNPJ: 65.690.774/0001-37</div><div class="dsig-role">LOCADOR</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">'+(cli||'—')+'</div><div class="dsig-sub">Data: '+docDate+'</div><div class="dsig-role">LOCATÁRIO</div></div></div></div><div class="dft"><div class="dft-l">ARDEN | Recibo Nº REC-001/2026 | '+docDate+'</div></div></div>';
+  }
+  const declPage='<div class="doc-page" style="margin-top:20px"><div class="dh"><div><div class="dh-logo">ARDEN</div><div class="dh-sub">Designer de Celebrações</div></div><div class="dh-right"><div class="dh-cnpj">CNPJ: 65.690.774/0001-37</div><div class="dh-info">São Pedro da Aldeia, RJ</div></div></div><div class="dtb"><div class="dtb-title">DECLARAÇÃO DE CONFORMIDADE</div><div class="dtb-num">Ref.: '+num+'</div></div><div class="dbd"><div class="ddecl" style="font-size:13px;line-height:2;margin-top:8px">'+declTxt+'</div><div class="dsigs" style="margin-top:40px"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">ARDEN Designer de Celebrações</div><div class="dsig-sub">CNPJ: 65.690.774/0001-37</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">'+(cli||'—')+'</div><div class="dsig-sub">Data: '+docDate+'</div></div></div></div><div class="dft"><div class="dft-l">ARDEN Designer de Celebrações | CNPJ: 65.690.774/0001-37 | São Pedro da Aldeia, RJ | '+docDate+'</div></div></div>';
+  const page1='<div class="doc-page"><div class="dh"><div><div class="dh-logo">ARDEN</div><div class="dh-sub">Designer de Celebrações</div></div><div class="dh-right"><div class="dh-cnpj">CNPJ: 65.690.774/0001-37</div><div class="dh-info">São Pedro da Aldeia, RJ<br>Data: '+docDate+'</div></div></div><div class="dtb"><div class="dtb-title">PRESTAÇÃO DE CONTAS</div><div class="dtb-num">Data: '+docDate+'</div></div><div class="dbd"><div class="dmeta"><div class="dmeta-row"><div class="dmc"><div class="dmc-l">CLIENTE</div><div class="dmc-v">'+(cli||'—')+'</div></div><div class="dmc"><div class="dmc-l">Adiantamento Recebido</div><div class="dmc-v" style="color:var(--dg3);font-size:14px;font-weight:600">'+fRd(adiant)+'</div></div></div><div class="dmeta-row"><div class="dmc" style="flex:1;border-right:none"><div class="dmc-l">Referente ao Evento</div><div class="dmc-v">'+(evNm||'—')+'</div></div></div><div class="dmeta-row"><div class="dmc"><div class="dmc-l">Data do Evento</div><div class="dmc-v">'+fDd(_v('dp-pc-ev-dt'))+'</div></div><div class="dmc"><div class="dmc-l">Data de Emissão</div><div class="dmc-v">'+docDate+'</div></div></div></div>'+(catHtml||'<div style="padding:14px;text-align:center;color:var(--dm);border:1px dashed var(--db);border-radius:4px;font-size:11px">Adicione categorias de despesa.</div>')+acHtml+'<div class="dtot"><div class="dtot-row tg"><div class="dtot-lbl"><strong>TOTAL GERAL DE DESPESAS</strong></div><div class="dtot-val">'+fRd(totalGeral)+'</div></div><div class="dtot-row"><div class="dtot-lbl">(-) Adiantamento Recebido<span class="dn2">Valor recebido antecipadamente</span></div><div class="dtot-val" style="font-size:18px;color:var(--dm)">— '+fRd(adiant)+'</div></div><div class="dtot-row '+(saldoPos?'sr':'sg')+'"><div class="dtot-lbl"><strong>'+(saldoPos?'SALDO A PAGAR':'SALDO A RESTITUIR AO CLIENTE')+'</strong></div><div class="dtot-val">'+fRd(Math.abs(saldo))+'</div></div></div>'+(dpPCAc.length?'<div style="text-align:center;font-size:10px;color:var(--dm);margin-top:8px">▶ Comprovante: Recibo de Locação REC-001/2026 — ver página seguinte</div>':'')+'<div class="dsigs" style="margin-top:22px"><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">ARDEN Designer de Celebrações</div><div class="dsig-sub">CNPJ: 65.690.774/0001-37</div><div class="dsig-role">Prestadora</div></div><div class="dsig"><div class="dsig-line"></div><div class="dsig-name">'+(cli||'—')+'</div><div class="dsig-sub">Data: '+docDate+'</div><div class="dsig-role">Contratante</div></div></div></div><div class="dft"><div class="dft-l">ARDEN Designer de Celebrações | CNPJ: 65.690.774/0001-37 | São Pedro da Aldeia, RJ | Gerado em '+docDate+'</div></div></div>';
+  dpShowPreview(page1+recPage+declPage);
+}
+
+// ── Save doc to state ──
+function salvarDocPanel(){
+  if(dpType==='proposta'){
+    const evId=_v('dp-p-ev');const ev=S.eventos.find(e=>e.id===evId);
+    const val=_n('dp-p-val');const sinal=_n('dp-p-sinal');
+    const propId=dpUid();
+    S.propostas.push({id:propId,num:_v('dp-p-num'),eventoId:evId||'',eventoNome:ev?ev.nome:_v('dp-p-ev-nome'),cliNome:_v('dp-p-cli'),dataEvento:_v('dp-p-ev-dt'),val,sinal,itens:[...dpPItens],status:'Enviada',gerado:todayStr()});
+    if(ev&&(ev.fase==='Lead'||ev.fase==='Proposta Enviada')){ev.fase='Proposta Enviada';autoTask(ev,'Proposta Enviada');}
+    save();fecharDocPanel();
+    renderPropostas();renderPipeline();renderEventos();renderDash();
+    if(confirm('Proposta salva!\nEvento avançou para "Proposta Enviada".\n\nDeseja imprimir / gerar PDF agora?'))imprimirDocPanel();
+  } else if(dpType==='contrato'){
+    const evId=_v('dp-c-ev');const ev=S.eventos.find(e=>e.id===evId);
+    const val=_n('dp-c-total');const sinal=_n('dp-c-sinal');
+    S.contratos.push({id:dpUid(),num:_v('dp-c-num'),eventoId:evId||'',eventoNome:ev?ev.nome:_v('dp-c-ev-nome'),cliNome:_v('dp-c-cli'),dataEvento:_v('dp-c-ev-dt'),tipo:_v('dp-c-tipo'),val,sinal,status:'Aguardando Assinatura',gerado:todayStr()});
+    if(ev){ev.fase='Confirmado';autoTask(ev,'Confirmado');if(sinal>0){S.contas.push({id:uid(),tipo:'receber',desc:'Sinal — '+(ev.nome),eventoId:evId,eventoNome:ev.nome,cat:'Sinal/Entrada',valor:sinal,venc:todayStr(),status:'Pendente',criado:todayStr()});}}
+    save();fecharDocPanel();
+    renderContratos();renderPipeline();renderEventos();renderDash();renderFinanceiro();
+    if(confirm('Contrato salvo! Evento confirmado.'+(sinal>0?'\nSinal de '+fRd(sinal)+' criado no Financeiro.':'')+'\n\nDeseja imprimir agora?'))imprimirDocPanel();
+  } else if(dpType==='prestacao'){
+    const evId=_v('dp-pc-ev');const ev=S.eventos.find(e=>e.id===evId);
+    const adiant=_n('dp-pc-adiant');
+    const totalDesp=dpPCCats.reduce((s,c)=>s+c.itens.reduce((ss,i)=>ss+i.val,0),0)+dpPCAc.reduce((s,a)=>s+a.val,0);
+    const saldo=totalDesp-adiant;
+    S.prestacoes.push({id:dpUid(),num:_v('dp-pc-num'),eventoId:evId||'',eventoNome:ev?ev.nome:_v('dp-pc-ev-nome'),cliNome:_v('dp-pc-cli'),dataEvento:_v('dp-pc-ev-dt'),adiant,totalDesp,saldo,gerado:todayStr()});
+    if(ev){ev.fase='Concluído';if(saldo>0){S.contas.push({id:uid(),tipo:'receber',desc:'Saldo Prestação — '+(ev.nome),eventoId:evId,eventoNome:ev.nome,cat:'Saldo Prestação',valor:saldo,venc:todayStr(),status:'Pendente',criado:todayStr()});}}
+    save();fecharDocPanel();
+    renderPrestacoes();renderPipeline();renderEventos();renderDash();renderFinanceiro();
+    if(confirm('Prestação salva! Evento concluído.'+(saldo>0?'\nSaldo de '+fRd(saldo)+' a receber criado no Financeiro.':'')+'\n\nDeseja imprimir agora?'))imprimirDocPanel();
+  }
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+load();populateSels();renderDash();renderPipeline();
+
+</script>
+</body>
+</html>
